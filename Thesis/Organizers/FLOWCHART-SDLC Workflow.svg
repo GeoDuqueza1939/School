@@ -616,10 +616,10 @@
     </text>
   </g>
   <g>
-    <ellipse style="fill: #ffffff" cx="23.2481" cy="873.188" rx="13.647" ry="12.9678"/>
-    <ellipse style="fill: none; fill-opacity:0; stroke-width: 4; stroke: #000000" cx="23.2481" cy="873.188" rx="13.647" ry="12.9678"/>
-    <text font-size="12.8" style="fill: #000000;text-anchor:middle;font-family:serif;font-style:normal;font-weight:700" x="23.2481" y="877.188">
-      <tspan x="23.2481" y="877.188">B</tspan>
+    <ellipse style="fill: #ffffff" cx="23.2481" cy="880.188" rx="13.647" ry="12.9678"/>
+    <ellipse style="fill: none; fill-opacity:0; stroke-width: 4; stroke: #000000" cx="23.2481" cy="880.188" rx="13.647" ry="12.9678"/>
+    <text font-size="12.8" style="fill: #000000;text-anchor:middle;font-family:serif;font-style:normal;font-weight:700" x="23.2481" y="884.188">
+      <tspan x="23.2481" y="884.188">B</tspan>
     </text>
   </g>
   <g>
@@ -695,14 +695,14 @@
     <polygon style="fill: none; fill-opacity:0; stroke-width: 4; stroke: #0000ff" points="-250.392,890.508 -255.392,880.508 -250.392,883.008 -245.392,880.508 "/>
   </g>
   <g>
-    <line style="fill: none; fill-opacity:0; stroke-width: 2; stroke-dasharray: 4; stroke: #000000" x1="23.2702" y1="858.219" x2="23.3122" y2="829.932"/>
-    <polygon style="fill: #000000" points="23.3233,822.432 28.3085,832.439 23.3122,829.932 18.3085,832.425 "/>
-    <polygon style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #000000" points="23.3233,822.432 28.3085,832.439 23.3122,829.932 18.3085,832.425 "/>
+    <line style="fill: none; fill-opacity:0; stroke-width: 2; stroke-dasharray: 4; stroke: #000000" x1="23.2676" y1="865.234" x2="23.3139" y2="829.932"/>
+    <polygon style="fill: #000000" points="23.3237,822.432 28.3106,832.439 23.3139,829.932 18.3106,832.426 "/>
+    <polygon style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #000000" points="23.3237,822.432 28.3106,832.439 23.3139,829.932 18.3106,832.426 "/>
   </g>
   <g>
-    <line style="fill: none; fill-opacity:0; stroke-width: 2; stroke-dasharray: 4; stroke: #000000" x1="23.0403" y1="888.034" x2="22.4752" y2="928.419"/>
-    <polygon style="fill: #000000" points="22.3703,935.918 17.5107,925.849 22.4752,928.419 27.5097,925.989 "/>
-    <polygon style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #000000" points="22.3703,935.918 17.5107,925.849 22.4752,928.419 27.5097,925.989 "/>
+    <line style="fill: none; fill-opacity:0; stroke-width: 2; stroke-dasharray: 4; stroke: #000000" x1="23.0135" y1="895.146" x2="22.4917" y2="928.419"/>
+    <polygon style="fill: #000000" points="22.3741,935.918 17.5315,925.841 22.4917,928.419 27.5303,925.998 "/>
+    <polygon style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #000000" points="22.3741,935.918 17.5315,925.841 22.4917,928.419 27.5303,925.998 "/>
   </g>
   <g>
     <line style="fill: none; fill-opacity:0; stroke-width: 2; stroke-dasharray: 4; stroke: #000000" x1="-165.716" y1="423.153" x2="-132.416" y2="423.153"/>
@@ -713,89 +713,68 @@
     <tspan x="-177.515" y="1007.85">Legend:</tspan>
   </text>
   <g>
-    <polyline style="fill: none; fill-opacity:0; stroke-width: 2; stroke-dasharray: 4; stroke: #000000" points="264.778,842.55 264.778,873.188 46.6311,873.188 "/>
-    <polygon style="fill: #000000" points="39.1311,873.188 49.1311,868.188 46.6311,873.188 49.1311,878.188 "/>
-    <polygon style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #000000" points="39.1311,873.188 49.1311,868.188 46.6311,873.188 49.1311,878.188 "/>
+    <polyline style="fill: none; fill-opacity:0; stroke-width: 2; stroke-dasharray: 4; stroke: #000000" points="264.778,842.55 264.778,880.188 46.6311,880.188 "/>
+    <polygon style="fill: #000000" points="39.1311,880.188 49.1311,875.188 46.6311,880.188 49.1311,885.188 "/>
+    <polygon style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #000000" points="39.1311,880.188 49.1311,875.188 46.6311,880.188 49.1311,885.188 "/>
   </g>
   <g>
-    <g>
-      <polygon style="fill: #d6d6ff" points="-250.391,894.98 -107.044,959.943 -250.391,1024.91 -393.738,959.943 "/>
-      <polygon style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #000000" points="-250.391,894.98 -107.044,959.943 -250.391,1024.91 -393.738,959.943 "/>
-      <text font-size="12.8" style="fill: #000000;text-anchor:middle;font-family:serif;font-style:normal;font-weight:normal" x="-250.391" y="947.843">
-        <tspan x="-250.391" y="947.843">Do reviewers have</tspan>
-        <tspan x="-250.391" y="963.843">design-relevant feedback</tspan>
-        <tspan x="-250.391" y="979.843">and suggestions?</tspan>
-      </text>
-    </g>
-    <g>
-      <rect style="fill: #ffdfdf" x="-175.155" y="1016.66" width="12" height="12" rx="1" ry="1"/>
-      <rect style="fill: none; fill-opacity:0; stroke-width: 1; stroke-linejoin: round; stroke: #000000" x="-175.155" y="1016.66" width="12" height="12" rx="1" ry="1"/>
-    </g>
-    <text font-size="12.8" style="fill: #000000;text-anchor:start;font-family:serif;font-style:normal;font-weight:normal" x="-153.302" y="1027.15">
-      <tspan x="-153.302" y="1027.15">Requirements Definition</tspan>
-    </text>
-    <line style="fill: none; fill-opacity:0; stroke-width: 2.35099e-037; stroke-linejoin: round; stroke: #ffffff" x1="-163.448" y1="1028.37" x2="-143.155" y2="1028.66"/>
-  </g>
-  <g>
-    <g>
-      <rect style="fill: #ffffaa" x="-175.155" y="1036.66" width="12" height="12" rx="1" ry="1"/>
-      <rect style="fill: none; fill-opacity:0; stroke-width: 1; stroke-linejoin: round; stroke: #000000" x="-175.155" y="1036.66" width="12" height="12" rx="1" ry="1"/>
-    </g>
-    <text font-size="12.8" style="fill: #000000;text-anchor:start;font-family:serif;font-style:normal;font-weight:normal" x="-153.302" y="1047.15">
-      <tspan x="-153.302" y="1047.15">System &amp; Software Design</tspan>
-    </text>
-    <line style="fill: none; fill-opacity:0; stroke-width: 2.35099e-037; stroke-linejoin: round; stroke: #ffffff" x1="-163.448" y1="1048.37" x2="-143.155" y2="1048.66"/>
-  </g>
-  <g>
-    <g>
-      <rect style="fill: #d6ffd6" x="-175.155" y="1056.66" width="11.7071" height="11.7071" rx="1" ry="1"/>
-      <rect style="fill: none; fill-opacity:0; stroke-width: 1; stroke-linejoin: round; stroke: #000000" x="-175.155" y="1056.66" width="11.7071" height="11.7071" rx="1" ry="1"/>
-    </g>
-    <text font-size="12.8" style="fill: #000000;text-anchor:start;font-family:serif;font-style:normal;font-weight:normal" x="-153.448" y="1067">
-      <tspan x="-153.448" y="1067">Implementation &amp; Unit Testing</tspan>
-    </text>
-    <line style="fill: none; fill-opacity:0; stroke-width: 2.35099e-037; stroke-linejoin: round; stroke: #ffffff" x1="-163.741" y1="1068.07" x2="-143.155" y2="1068.66"/>
-  </g>
-  <g>
-    <g>
-      <rect style="fill: #d6d6ff" x="33.2902" y="1016.66" width="12" height="12" rx="1" ry="1"/>
-      <rect style="fill: none; fill-opacity:0; stroke-width: 1; stroke-linejoin: round; stroke: #000000" x="33.2902" y="1016.66" width="12" height="12" rx="1" ry="1"/>
-    </g>
-    <text font-size="12.8" style="fill: #000000;text-anchor:start;font-family:serif;font-style:normal;font-weight:normal" x="55.1438" y="1027.15">
-      <tspan x="55.1438" y="1027.15">Integration &amp; System Testing</tspan>
-    </text>
-    <line style="fill: none; fill-opacity:0; stroke-width: 2.35099e-037; stroke-linejoin: round; stroke: #ffffff" x1="44.9974" y1="1028.37" x2="65.2902" y2="1028.66"/>
-  </g>
-  <g>
-    <g>
-      <rect style="fill: #ffaaff" x="33.2902" y="1036.66" width="12" height="12" rx="1" ry="1"/>
-      <rect style="fill: none; fill-opacity:0; stroke-width: 1; stroke-linejoin: round; stroke: #000000" x="33.2902" y="1036.66" width="12" height="12" rx="1" ry="1"/>
-    </g>
-    <text font-size="12.8" style="fill: #000000;text-anchor:start;font-family:serif;font-style:normal;font-weight:normal" x="55.1438" y="1047.15">
-      <tspan x="55.1438" y="1047.15">Operation &amp; Maintenance</tspan>
-    </text>
-    <line style="fill: none; fill-opacity:0; stroke-width: 2.35099e-037; stroke-linejoin: round; stroke: #ffffff" x1="44.9974" y1="1048.37" x2="65.2902" y2="1048.66"/>
-  </g>
-  <g>
-    <line style="fill: none; fill-opacity:0; stroke-width: 2.35099e-037; stroke-linejoin: round; stroke: #ffffff" x1="272.572" y1="1022.94" x2="322.572" y2="1032.94"/>
-    <g>
-      <line style="fill: none; fill-opacity:0; stroke-width: 4; stroke-linejoin: round; stroke: #0000ff" x1="252.572" y1="1022.94" x2="280.6" y2="1022.94"/>
-      <polygon style="fill: #0000ff" points="288.1,1022.94 278.1,1027.94 280.6,1022.94 278.1,1017.94 "/>
-      <polygon style="fill: none; fill-opacity:0; stroke-width: 4; stroke: #0000ff" points="288.1,1022.94 278.1,1027.94 280.6,1022.94 278.1,1017.94 "/>
-    </g>
-    <text font-size="12.8" style="fill: #000000;text-anchor:start;font-family:serif;font-style:normal;font-weight:normal" x="297.572" y="1027.12">
-      <tspan x="297.572" y="1027.12">Main workflow</tspan>
+    <polygon style="fill: #d6d6ff" points="-250.391,894.98 -107.044,959.943 -250.391,1024.91 -393.738,959.943 "/>
+    <polygon style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #000000" points="-250.391,894.98 -107.044,959.943 -250.391,1024.91 -393.738,959.943 "/>
+    <text font-size="12.8" style="fill: #000000;text-anchor:middle;font-family:serif;font-style:normal;font-weight:normal" x="-250.391" y="947.843">
+      <tspan x="-250.391" y="947.843">Do reviewers have</tspan>
+      <tspan x="-250.391" y="963.843">design-relevant feedback</tspan>
+      <tspan x="-250.391" y="979.843">and suggestions?</tspan>
     </text>
   </g>
   <g>
-    <line style="fill: none; fill-opacity:0; stroke-width: 2.35099e-037; stroke: #ffffff" x1="272.572" y1="1042.94" x2="322.572" y2="1052.94"/>
-    <g>
-      <line style="fill: none; fill-opacity:0; stroke-width: 2; stroke-dasharray: 4; stroke: #000000" x1="252.572" y1="1042.94" x2="282.836" y2="1042.94"/>
-      <polygon style="fill: #000000" points="290.336,1042.94 280.336,1047.94 282.836,1042.94 280.336,1037.94 "/>
-      <polygon style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #000000" points="290.336,1042.94 280.336,1047.94 282.836,1042.94 280.336,1037.94 "/>
-    </g>
-    <text font-size="12.8" style="fill: #000000;text-anchor:start;font-family:serif;font-style:normal;font-weight:normal" x="297.572" y="1047.12">
-      <tspan x="297.572" y="1047.12">Documentation workflow</tspan>
-    </text>
+    <rect style="fill: #ffdfdf" x="-175.155" y="1016.66" width="12" height="12" rx="1" ry="1"/>
+    <rect style="fill: none; fill-opacity:0; stroke-width: 1; stroke-linejoin: round; stroke: #000000" x="-175.155" y="1016.66" width="12" height="12" rx="1" ry="1"/>
   </g>
+  <text font-size="12.8" style="fill: #000000;text-anchor:start;font-family:serif;font-style:normal;font-weight:normal" x="-153.302" y="1027.15">
+    <tspan x="-153.302" y="1027.15">Requirements Definition</tspan>
+  </text>
+  <g>
+    <rect style="fill: #ffffaa" x="-175.155" y="1036.66" width="12" height="12" rx="1" ry="1"/>
+    <rect style="fill: none; fill-opacity:0; stroke-width: 1; stroke-linejoin: round; stroke: #000000" x="-175.155" y="1036.66" width="12" height="12" rx="1" ry="1"/>
+  </g>
+  <text font-size="12.8" style="fill: #000000;text-anchor:start;font-family:serif;font-style:normal;font-weight:normal" x="-153.302" y="1047.15">
+    <tspan x="-153.302" y="1047.15">System &amp; Software Design</tspan>
+  </text>
+  <g>
+    <rect style="fill: #d6ffd6" x="-175.155" y="1056.66" width="11.7071" height="11.7071" rx="1" ry="1"/>
+    <rect style="fill: none; fill-opacity:0; stroke-width: 1; stroke-linejoin: round; stroke: #000000" x="-175.155" y="1056.66" width="11.7071" height="11.7071" rx="1" ry="1"/>
+  </g>
+  <text font-size="12.8" style="fill: #000000;text-anchor:start;font-family:serif;font-style:normal;font-weight:normal" x="-153.448" y="1067">
+    <tspan x="-153.448" y="1067">Implementation &amp; Unit Testing</tspan>
+  </text>
+  <g>
+    <rect style="fill: #d6d6ff" x="33.2902" y="1016.66" width="12" height="12" rx="1" ry="1"/>
+    <rect style="fill: none; fill-opacity:0; stroke-width: 1; stroke-linejoin: round; stroke: #000000" x="33.2902" y="1016.66" width="12" height="12" rx="1" ry="1"/>
+  </g>
+  <text font-size="12.8" style="fill: #000000;text-anchor:start;font-family:serif;font-style:normal;font-weight:normal" x="55.1438" y="1027.15">
+    <tspan x="55.1438" y="1027.15">Integration &amp; System Testing</tspan>
+  </text>
+  <g>
+    <rect style="fill: #ffaaff" x="33.2902" y="1036.66" width="12" height="12" rx="1" ry="1"/>
+    <rect style="fill: none; fill-opacity:0; stroke-width: 1; stroke-linejoin: round; stroke: #000000" x="33.2902" y="1036.66" width="12" height="12" rx="1" ry="1"/>
+  </g>
+  <text font-size="12.8" style="fill: #000000;text-anchor:start;font-family:serif;font-style:normal;font-weight:normal" x="55.1438" y="1047.15">
+    <tspan x="55.1438" y="1047.15">Operation &amp; Maintenance</tspan>
+  </text>
+  <g>
+    <line style="fill: none; fill-opacity:0; stroke-width: 4; stroke-linejoin: round; stroke: #0000ff" x1="252.572" y1="1022.94" x2="280.6" y2="1022.94"/>
+    <polygon style="fill: #0000ff" points="288.1,1022.94 278.1,1027.94 280.6,1022.94 278.1,1017.94 "/>
+    <polygon style="fill: none; fill-opacity:0; stroke-width: 4; stroke: #0000ff" points="288.1,1022.94 278.1,1027.94 280.6,1022.94 278.1,1017.94 "/>
+  </g>
+  <text font-size="12.8" style="fill: #000000;text-anchor:start;font-family:serif;font-style:normal;font-weight:normal" x="297.572" y="1027.12">
+    <tspan x="297.572" y="1027.12">Main workflow</tspan>
+  </text>
+  <g>
+    <line style="fill: none; fill-opacity:0; stroke-width: 2; stroke-dasharray: 4; stroke: #000000" x1="252.572" y1="1042.94" x2="282.836" y2="1042.94"/>
+    <polygon style="fill: #000000" points="290.336,1042.94 280.336,1047.94 282.836,1042.94 280.336,1037.94 "/>
+    <polygon style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #000000" points="290.336,1042.94 280.336,1047.94 282.836,1042.94 280.336,1037.94 "/>
+  </g>
+  <text font-size="12.8" style="fill: #000000;text-anchor:start;font-family:serif;font-style:normal;font-weight:normal" x="297.572" y="1047.12">
+    <tspan x="297.572" y="1047.12">Documentation workflow</tspan>
+  </text>
 </svg>
