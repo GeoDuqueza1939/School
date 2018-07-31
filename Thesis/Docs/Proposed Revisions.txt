@@ -1,0 +1,17 @@
+Statement of the Problem
+-
+
+This study aims to improve task and workflow management in the daily work of teachers, school administrators, and office personnel involved in the academic sector, hereinafter referred to as the “respondents”. Specifically, the study aims to answer the following inquiries:
+1)	How can the daily roles, functions, and workflow of the respondents be supported by the proposed system?
+2)	How can the different kinds of information and resources that the respondents work with be managed using the proposed system?
+3)	What can be done to anticipate and adapt to changes in organizational policies, utilized information systems, and established workflows?
+4)	How can user habits, preferences, and feedback be considered in the design, configuration, and evolution of the proposed system?
+
+Objectives of the Study
+-
+
+The main objective of the study is to create an appropriate support software for the respondents with consideration for the nature of their work as professionals in the academic sector. Toward this end, the following secondary aims need to be accomplished:
+1)	Implement the proposed system as a digital task and workflow management software that supports mobile and desktop devices.
+2)	Provide tools as plugin-based subsystems that will serve both as support software for various tasks and management activities and as sample plugins for demonstrating various functions.
+3)	Supply ample documentation and an accompanying plugin SDK (software development kit) to support system extensibility and guide future plugin development endeavors.
+4)	Create a reliable preferences editor to accept user customizations and maintain an online facility for bug report submissions, user feedback and suggestions, plugin proposals, and system updates.
