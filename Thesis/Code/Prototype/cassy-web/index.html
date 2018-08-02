@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en-ph" xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+<head>
+<meta charset="UTF-8" />
+<title>CASSY: The Classroom and Administration Support System</title>
+<meta name="author" content="Geovani P. Duqueza" />
+<meta name="author" content="Mark Jude I. Mayores" />
+<meta name="description" content="An Extensible, Activity-Centered, Ergonomically Designed Task Management and Toolkit System for School Professionals" />
+<link href="css/main.css" rel="stylesheet" type="text/css" />
+<link href="css/menu.css" rel="stylesheet" type="text/css" />
+<script src="js/common.js" type="application/javascript"></script>
+</head>
+<body>
+<div class="startup-page" id="startup-page">Please wait...</div>
+
+<div class="client-area" id="client-area">
+<p id="test"></p>
+</div>
+
+<div class="menu-expanded" id="menu">
+<img src="images/menu-white.png" alt="Menu" id="menu-button" />
+<div class="menu-area" id="menu-area">
+<h3 class="menu-heading">Welcome to CASSY!</h3>
+<ul class="menu-items" id="menu-items">
+</ul>
+</div>
+<img src="images/settings-white.png" alt="Settings" id="settings-button" />
+</div>
+
+<input type="hidden" id="SelectedPlugin" name="SelectedPlugin" />
+
+<script src="js/button.js" type="application/javascript"></script>
+<script src="js/pluginloading.js" type="application/javascript"></script>
+
+<script id="startup-page-script" type="application/javascript">
+//<!--
+  window.setTimeout(function() {
+      var startupPage = document.getElementById('startup-page');
+      startupPage.style.visibility = 'hidden';
+      startupPage.style.display = 'none';
+    }, 1500);
+    
+  var startScr = document.getElementById('startup-page-script');
+  startScr.parentElement.removeChild(startScr);
+//-->
+</script>
+
+
+</body>
+</html>
