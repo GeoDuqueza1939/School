@@ -11,13 +11,13 @@ div.menu, div.menu-expanded {
 }
 
 div.menu-expanded {
-	width: 15em;
+	width: 250px;
 }
 
 div.menu-area {
 	position: absolute;
 	top: 0;
-	bottom: 0;
+	bottom: 80px;
 	left: 36px;
 	right: 0;
 	overflow: auto;
@@ -59,15 +59,20 @@ div.menu-area {
 	margin-top: 0.5em;
 }
 
-.menu-item[class~=held] {
+.menu-item[class~=selected] {
+	color: black;
+	background-color: gold;
+}
+	
+.menu-item[class~=held], .menu-item[class~=selected][class~=held] {
 	color: gray;
 	border-style: inset;
 	background-color: lightgray;
 }
 
-.menu-item[class~=selected] {
-	color: black;
-	background-color: gold;
+.menu-item[class~=hidden] {
+	display: none;
+	visibility: hidden;
 }
 	
 div.menu .menu-heading, div.menu .menu-area {
@@ -81,8 +86,59 @@ img#menu-button {
 	left: 0;
 }
 
-img#settings-button {
-	position: fixed;
+#profile-menu-item {
+	position: absolute;
+	display: block;
+	bottom: 42px;
+	left: 0;
+	width: 286px;
+	cursor: pointer;
+}
+
+#preferences-menu-item {
+	position: absolute;
+	display: block;
+	bottom: 0;
+	left: 0;
+	width: 286px;
+	cursor: pointer;
+}
+
+img#profile-button, img#settings-button {
+	position: absolute;
+	margin: 0;
+	padding: 0;
+	border: 0;
 	bottom: 2px;
 	left: 0;
+}
+
+#profile-menu-item > span.menu-text, #preferences-menu-item > span.menu-text {
+	color: white;
+	display: block;
+	position: absolute;
+	bottom: 12px;
+	left: 55px;
+	line-height: 1;
+	margin: 0;
+	padding: 0;
+	border: 0;
+}
+
+.menu span.menu-text {
+	display: none;
+	visibility: hidden;
+}
+
+#profile-menu-item[class~=held], #preferences-menu-item[class~=held] {
+	background-color: rgba(255, 255, 255, 0.3);
+}
+
+#prefsClient.visible, #profileClient.visible {
+	position: absolute;
+	top: 0px;
+	bottom: 0px;
+	left: 0px;
+	right: 0px;
+	background-color: white;
 }

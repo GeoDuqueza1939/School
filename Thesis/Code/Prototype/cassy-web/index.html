@@ -11,40 +11,48 @@
 <script src="js/common.js" type="application/javascript"></script>
 </head>
 <body>
-<div class="startup-page" id="startup-page">Please wait...</div>
+<div id="progress-page">Loading plugins. <br />Please wait...</div>
 
 <div class="client-area" id="client-area">
-<p id="test"></p>
+<p id="not-found">Sorry, plugins with client content are not found.</p>
 </div>
 
-<div class="menu-expanded" id="menu">
+<div class="menu" id="menu">
 <img src="images/menu-white.png" alt="Menu" id="menu-button" />
 <div class="menu-area" id="menu-area">
 <h3 class="menu-heading">Welcome to CASSY!</h3>
 <ul class="menu-items" id="menu-items">
 </ul>
 </div>
-<img src="images/settings-white.png" alt="Settings" id="settings-button" />
+<span id="profile-menu-item"><img src="images/account-white.png" alt="Profile" id="profile-button" />&nbsp;<span class="menu-text">Profile</span></span>
+<span id="preferences-menu-item"><img src="images/settings-white.png" alt="Preferences" id="preferences-button" />&nbsp;<span class="menu-text">Preferences</span></span>
 </div>
 
 <input type="hidden" id="SelectedPlugin" name="SelectedPlugin" />
 
 <script src="js/button.js" type="application/javascript"></script>
+<script src="js/plugins/tasks.js" type="application/javascript"></script> <!-- should always be first -->
+<script src="js/plugins/classrecord.js" type="application/javascript"></script>
+<script src="js/plugins/classman.js" type="application/javascript"></script>
+<script src="js/plugins/admin.js" type="application/javascript"></script>
+<script src="js/menu.js" type="application/javascript"></script>
+<script src="js/plugins/plugman.js" type="application/javascript"></script> <!-- should always be last -->
 <script src="js/pluginloading.js" type="application/javascript"></script>
 
 <script id="startup-page-script" type="application/javascript">
 //<!--
   window.setTimeout(function() {
-      var startupPage = document.getElementById('startup-page');
-      startupPage.style.visibility = 'hidden';
-      startupPage.style.display = 'none';
-    }, 1500);
+      var progressPage = document.getElementById('progress-page');
+      progressPage.style.visibility = 'hidden';
+      progressPage.style.display = 'none';
+    }, 2000);
     
   var startScr = document.getElementById('startup-page-script');
   startScr.parentElement.removeChild(startScr);
 //-->
 </script>
 
+<script src="js/testing.js" type="application/javascript"></script>
 
 </body>
 </html>

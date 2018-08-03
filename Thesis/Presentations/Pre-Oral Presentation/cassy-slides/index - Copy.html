@@ -1,0 +1,375 @@
+<!doctype html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
+		<title>CASSY: The Classroom and Administration Support System</title>
+
+		<link rel="stylesheet" href="/reveal.js/css/reveal.css">
+		<!-- <link rel="stylesheet" href="/reveal.js/css/theme/black.css"> -->
+        <link rel="stylesheet" href="support/cassy.css">
+        
+		<!-- Theme used for syntax highlighting of code -->
+        <style>
+@import url("support/fonts/montserrat/montserrat.css");
+@import url("support/fonts/opensans/opensans.css");
+@import url("support/fonts/lato/lato.css");
+@import url("support/fonts/asul/asul.css");
+@import url("support/fonts/josefinsans/josefinsans.css");
+@import url("support/fonts/league/league_gothic.css");
+@import url("support/fonts/merriweathersans/merriweathersans.css");
+@import url("support/fonts/overpass/overpass.css");
+@import url("support/fonts/overpass2/overpass2.css");
+@import url("support/fonts/quicksand/quicksand.css");
+@import url("support/fonts/cabinsketch/cabinsketch.css");
+@import url("support/fonts/newscycle/newscycle.css");
+@import url("support/fonts/oxygen/oxygen.css");
+        </style>
+		<link rel="stylesheet" href="/reveal.js/lib/css/zenburn.css">
+
+		<!-- Printing and PDF exports -->
+		<script>
+			var link = document.createElement( 'link' );
+			link.rel = 'stylesheet';
+			link.type = 'text/css';
+			link.href = window.location.search.match( /print-pdf/gi ) ? '/reveal.js/css/print/pdf.css' : '/reveal.js/css/print/paper.css';
+			document.getElementsByTagName( 'head' )[0].appendChild( link );
+		</script>
+	</head>
+	<body>
+		<div class="theme-font-sketch theme-color-mint-beige" style="width: 100%; height: 100%;">
+    <div class="reveal">
+        <div class="slides">
+            <section data-background-color="#274e13">
+                <div class="sl-block" data-block-type="text" style="width: 90%; left: 64px; top: 96px; height: auto;">
+                    <div class="sl-block-content" style="font-size: 150%; letter-spacing: 0.5em; color: rgb(60, 120, 216); z-index: 11;" data-has-letter-spacing="">
+                        <h1>CASSY</h1>
+                    </div>
+                </div>
+                <div class="sl-block" data-block-type="text" style="height: auto; min-width: 30px; min-height: 30px; width: 90%; left: 5%; top: 249px;">
+                    <div class="sl-block-content fragment" style="z-index: 12; font-size: 90%; color: rgb(224, 102, 102);" data-fragment-index="0">
+                        <h2>An Extensible, Activity-Centered, Ergonomically Designed Task Management and Toolkit System for School Professionals</h2>
+                    </div>
+                </div>
+                <div class="sl-block" data-block-type="text" style="height: auto; min-width: 30px; min-height: 30px; width: auto; left: 480px; top: 465px;">
+                    <div class="sl-block-content fragment" style="z-index: 13;" data-fragment-index="1">
+                        <h3>by:
+            
+            
+                            <br/>
+Geovani Duqueza
+            
+            
+                            <br/>
+&amp;
+            
+            
+                            <br/>
+Mark Jude Mayores
+        
+        
+                        </h3>
+                    </div>
+                </div>
+            </section>
+            <section class="stack">
+                <section data-background-color="#274e13">
+                    <div class="sl-block" data-block-type="text" style="width: 1075px; left: 102px; top: 274px; height: auto;">
+                        <div class="sl-block-content" style="z-index: 10;">
+                            <h1>Introduction</h1>
+                        </div>
+                    </div>
+                </section>
+                <section>
+                    <div class="sl-block" data-block-type="text" style="width: 1075px; left: 102px; top: 194px; height: auto;">
+                        <div class="sl-block-content" style="z-index: 10;">
+                            <h2>The Teaching Profession</h2>
+                        </div>
+                    </div>
+                    <div class="sl-block" data-block-type="text" style="width: 1075px; left: 102px; top: 268px; height: auto;">
+                        <div class="sl-block-content" style="z-index: 11;">
+                            <ul>
+                                <li class="fragment" data-fragment-index="0">the "noblest of professions"</li>
+                                <li class="fragment" data-fragment-index="1">one of the most tiresome but fulfilling work</li>
+                                <li class="fragment" data-fragment-index="2">not without issues</li>
+                            </ul>
+                        </div>
+                    </div>
+                </section>
+                <section>
+                    <div class="sl-block" data-block-type="text" style="width: 512px; left: 64px; top: 108px; height: auto;">
+                        <div class="sl-block-content" style="text-align: left; z-index: 10;">
+                            <h2>Issues Encountered</h2>
+                        </div>
+                    </div>
+                    <div class="sl-block" data-block-type="text" style="width: 512px; left: 64px; top: 216px; height: auto;">
+                        <div class="sl-block-content" style="text-align: left; z-index: 11;">
+                            <ul>
+                                <li class="fragment" data-fragment-index="0">Low pay</li>
+                                <li class="fragment" data-fragment-index="1">Burdensome work</li>
+                                <li class="fragment" data-fragment-index="2">Stress and health issues</li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="sl-block" data-block-type="text" style="width: 512px; left: 704px; top: 108px; height: auto;">
+                        <div class="sl-block-content fragment" style="text-align: left; z-index: 12;" data-fragment-index="3">
+                            <h2>Solutions (?)</h2>
+                        </div>
+                    </div>
+                    <div class="sl-block" data-block-type="text" style="width: 512px; left: 704px; top: 216px; height: auto;">
+                        <div class="sl-block-content" style="text-align: left; z-index: 13;">
+                            <ul>
+                                <li class="fragment" data-fragment-index="4">Legislation and policy changes</li>
+                                <li class="fragment" data-fragment-index="5">Time management</li>
+                                <li class="fragment" data-fragment-index="6">Task management</li>
+                            </ul>
+                        </div>
+                    </div>
+                </section>
+            </section>
+            <section data-background-color="#274e13">
+                <div class="sl-block" data-block-type="text" style="width: 1075px; left: 102px; top: 274px; height: auto;">
+                    <div class="sl-block-content" style="z-index: 10;">
+                        <h1>Rationale</h1>
+                    </div>
+                </div>
+            </section>
+            <section data-background-color="#274e13">
+                <div class="sl-block" data-block-type="text" style="width: 1075px; left: 102px; top: 274px; height: auto;">
+                    <div class="sl-block-content" style="z-index: 10;">
+                        <h1>Statement of the Problem</h1>
+                    </div>
+                </div>
+            </section>
+            <section data-background-color="#274e13">
+                <div class="sl-block" data-block-type="text" style="width: 1075px; left: 102px; top: 274px; height: auto;">
+                    <div class="sl-block-content" style="z-index: 10;">
+                        <h1>Objectives of the Study</h1>
+                    </div>
+                </div>
+            </section>
+            <section data-background-color="#274e13">
+                <div class="sl-block" data-block-type="text" style="width: 1075px; left: 102px; top: 274px; height: auto;">
+                    <div class="sl-block-content" style="z-index: 10;">
+                        <h1>Significance of the Study</h1>
+                    </div>
+                </div>
+            </section>
+            <section data-background-color="#274e13">
+                <div class="sl-block" data-block-type="text" style="width: 1075px; left: 102px; top: 274px; height: auto;">
+                    <div class="sl-block-content" style="z-index: 10;">
+                        <h1>Theoretical Framework</h1>
+                    </div>
+                </div>
+            </section>
+            <section data-background-color="#274e13">
+                <div class="sl-block" data-block-type="text" style="width: 1075px; left: 102px; top: 274px; height: auto;">
+                    <div class="sl-block-content" style="z-index: 10;">
+                        <h1>Conceptual Framework</h1>
+                    </div>
+                </div>
+            </section>
+            <section data-background-color="#274e13">
+                <div class="sl-block" data-block-type="text" style="width: 1075px; left: 102px; top: 274px; height: auto;">
+                    <div class="sl-block-content" style="z-index: 10;">
+                        <h1>Scope and Delimitation</h1>
+                    </div>
+                </div>
+            </section>
+            <section data-background-color="#274e13">
+                <div class="sl-block" data-block-type="text" style="width: 1075px; left: 102px; top: 274px; height: auto;">
+                    <div class="sl-block-content" style="z-index: 10;">
+                        <h1>Review of Related Studies and Literature</h1>
+                    </div>
+                </div>
+            </section>
+            <section class="stack">
+                <section data-background-color="#274e13">
+                    <div class="sl-block" data-block-type="text" style="width: 1075px; left: 102px; top: 274px; height: auto;">
+                        <div class="sl-block-content" style="z-index: 10;">
+                            <h1>Methodology and Design</h1>
+                        </div>
+                    </div>
+                </section>
+                <section>
+                    <div class="sl-block" data-block-type="text" style="width: 550px; left: 38px; top: 86px; height: auto;">
+                        <div class="sl-block-content" style="text-align: left; z-index: 11;">
+                            <h2>Overview of the SDLC</h2>
+                        </div>
+                    </div>
+                    <div class="sl-block" data-block-type="text" style="width: 550px; left: 38px; top: 158px; height: auto;">
+                        <div class="sl-block-content" style="z-index: 12; text-align: left;">
+                            <p>The Waterfall model will be used in the software development life cycle of the proposed system.</p>
+                            <ul>
+                                <li>Scheduling</li>
+                                <li>Workflow</li>
+                                <li>Toolset</li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="sl-block" data-block-type="iframe" style="width: 602px; height: 648px; left: 640px; top: 36px; min-width: 4px; min-height: 4px;">
+                        <div class="sl-block-content" style="z-index: 13;">
+                            <iframe webkitallowfullscreen="" mozallowfullscreen="" allowfullscreen="" sandbox="allow-forms allow-scripts allow-popups allow-same-origin allow-pointer-lock"></iframe>
+                        </div>
+                    </div>
+                </section>
+                <section>
+                    <div class="sl-block" data-block-type="text" style="width: 1075px; left: 102px; top: 194px; height: auto;">
+                        <div class="sl-block-content" style="z-index: 10;">
+                            <h2>Requirements Definition</h2>
+                        </div>
+                    </div>
+                    <div class="sl-block" data-block-type="text" style="width: 1075px; left: 102px; top: 268px; height: auto;">
+                        <div class="sl-block-content" style="z-index: 11;">
+                            <ul>
+                                <li>Bullet One</li>
+                                <li>Bullet Two</li>
+                                <li>Bullet Three</li>
+                            </ul>
+                        </div>
+                    </div>
+                </section>
+                <section>
+                    <div class="sl-block" data-block-type="text" style="width: 1075px; left: 102px; top: 194px; height: auto;">
+                        <div class="sl-block-content" style="z-index: 10;">
+                            <h2>System and Software Design</h2>
+                        </div>
+                    </div>
+                    <div class="sl-block" data-block-type="text" style="width: 1075px; left: 102px; top: 268px; height: auto;">
+                        <div class="sl-block-content" style="z-index: 11;">
+                            <ul>
+                                <li>Bullet One</li>
+                                <li>Bullet Two</li>
+                                <li>Bullet Three</li>
+                            </ul>
+                        </div>
+                    </div>
+                </section>
+                <section>
+                    <div class="sl-block" data-block-type="text" style="width: 1075px; left: 102px; top: 194px; height: auto;">
+                        <div class="sl-block-content" style="z-index: 10;">
+                            <h2>Implementation and Unit Testing</h2>
+                        </div>
+                    </div>
+                    <div class="sl-block" data-block-type="text" style="width: 1075px; left: 102px; top: 268px; height: auto;">
+                        <div class="sl-block-content" style="z-index: 11;">
+                            <ul>
+                                <li>Bullet One</li>
+                                <li>Bullet Two</li>
+                                <li>Bullet Three</li>
+                            </ul>
+                        </div>
+                    </div>
+                </section>
+                <section>
+                    <div class="sl-block" data-block-type="text" style="width: 1075px; left: 102px; top: 194px; height: auto;">
+                        <div class="sl-block-content" style="z-index: 10;">
+                            <h2>Integration and System Testing</h2>
+                        </div>
+                    </div>
+                    <div class="sl-block" data-block-type="text" style="width: 1075px; left: 102px; top: 268px; height: auto;">
+                        <div class="sl-block-content" style="z-index: 11;">
+                            <ul>
+                                <li>Bullet One</li>
+                                <li>Bullet Two</li>
+                                <li>Bullet Three</li>
+                            </ul>
+                        </div>
+                    </div>
+                </section>
+                <section>
+                    <div class="sl-block" data-block-type="text" style="width: 1075px; left: 102px; top: 194px; height: auto;">
+                        <div class="sl-block-content" style="z-index: 10;">
+                            <h2>Operation and Maintenance</h2>
+                        </div>
+                    </div>
+                    <div class="sl-block" data-block-type="text" style="width: 1075px; left: 102px; top: 268px; height: auto;">
+                        <div class="sl-block-content" style="z-index: 11;">
+                            <ul>
+                                <li>Bullet One</li>
+                                <li>Bullet Two</li>
+                                <li>Bullet Three</li>
+                            </ul>
+                        </div>
+                    </div>
+                </section>
+            </section>
+            <section data-background-color="#274e13">
+                <div class="sl-block" data-block-type="text" style="width: 1075px; left: 102px; top: 274px; height: auto;">
+                    <div class="sl-block-content" style="z-index: 10;">
+                        <h1>Initial Design Concepts</h1>
+                    </div>
+                </div>
+            </section>
+            <section data-background-color="#274e13">
+                <div class="sl-block" data-block-type="text" style="width: 1075px; left: 102px; top: 274px; height: auto;">
+                    <div class="sl-block-content" style="z-index: 10;">
+                        <h1>Prototype/Design Demonstration</h1>
+                    </div>
+                </div>
+            </section>
+            <section>
+                <div class="sl-block" data-block-type="text" style="width: 1152px; left: 64px; top: 165px; height: auto;">
+                    <div class="sl-block-content" style="font-size: 200%; text-align: center; z-index: 11;" data-fragment-index="0">
+                        <h1>
+                            <span style="color:#FF0000" class="fragment" data-fragment-index="0">Thank</span>
+                            <span style="color:#FFFF00" class="fragment" data-fragment-index="1">You</span>
+                            <br/>
+                            <span style="color:#00FF00" class="fragment" data-fragment-index="2">Very</span>
+                            <span style="color:#0000FF" class="fragment" data-fragment-index="3">Much</span>
+                        </h1>
+                    </div>
+                </div>
+                <div class="sl-block" data-block-type="text" style="height: auto; min-width: 30px; min-height: 30px; width: 640px; left: 560px; top: 589px;">
+                    <div class="sl-block-content" style="z-index: 12; text-align: right;" data-fragment-index="0">
+                        <p class="fragment" data-fragment-index="4">
+                            <em>— The Developers of 
+                                <strong>CASSY</strong>, the 
+                                <strong>Classroom and Administration Support System</strong>
+                            </em>
+                        </p>
+                    </div>
+                </div>
+            </section>
+        </div>
+    </div>
+</div>
+
+		<script src="/reveal.js/lib/js/head.min.js"></script>
+		<script src="/reveal.js/js/reveal.js"></script>
+
+		<script>
+			// More info about config & dependencies:
+			// - https://github.com/hakimel/reveal.js#configuration
+			// - https://github.com/hakimel/reveal.js#dependencies
+			Reveal.initialize({
+				dependencies: [
+					{ src: '/reveal.js/plugin/markdown/marked.js' },
+					{ src: '/reveal.js/plugin/markdown/markdown.js' },
+					{ src: '/reveal.js/plugin/notes/notes.js', async: true },
+					{ src: '/reveal.js/plugin/highlight/highlight.js', async: true, callback: function() { hljs.initHighlightingOnLoad(); } },
+
+                    // Zoom in and out with Alt+click
+                    { src: '/reveal.js/plugin/zoom-js/zoom.js', async: true },
+                    
+                    // Server side speaker notes
+                    { src: 'socket.io/socket.io.js', async: true },
+                    { src: 'plugin/notes-server/client.js', async: true }
+                    ],
+                    zoomLevel : 3,
+                    width: 1280,
+                    height: 720,
+                    transition: "default",
+                    backgroundTransition: "concave",
+                     center: false
+			});
+            Reveal.configure({
+                pdfMaxPagesPerSlide: 6,
+                slideNumber: 'c/t',
+                showSlideNumber: 'speaker'
+                
+                });
+		</script>
+	</body>
+</html>
