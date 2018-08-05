@@ -1,0 +1,79 @@
+#add-task-button {
+    position: fixed;
+    z-index: 101;
+    bottom: 50px;
+    right: 50px;
+}
+
+#add-task-button.hidden {
+    display: none;
+    visibility: hidden;
+}
+
+#addTaskForm {
+    position: fixed;
+    z-index: 101;
+    top: 20px;
+    bottom: 20px;
+    left: 20px;
+    right: 20px;
+    background-color: white;
+    border: 1px outset gray;
+    padding: 2em;
+}
+
+#addTaskForm input[type=text] {
+    width: 90%;
+}
+
+#taskClientTaskList {
+    display: table;
+    width: 100%;
+}
+
+.task-item {
+    display: table-row;
+}
+
+.task-checkbox-span {
+    display: table-cell;
+    vertical-align: middle;
+}
+
+.task-item-text {
+    display: table-cell;
+    vertical-align: middle;
+    padding: 0.5em 0;
+}
+
+.task-item-name {
+    display: block;
+    margin: 0;
+    padding: 0;
+    font-weight: bold;
+    font-size: 80%;
+}
+
+.task-item-schedule, .task-item-alarm {
+    font-size: 50%;
+    float: right;
+    clear: right;
+}
+
+.task-item-schedule::before {
+    content: " ";
+    background: url('../../images/time.png') no-repeat 0 0;
+    background-size: 100%;
+    display: inline-block;
+    height: 1em;
+    width: 1em;
+}
+
+.task-item-alarm::before {
+    content: " ";
+    background: url('../../images/alarm.png') no-repeat 0 0;
+    background-size: 100%;
+    display: inline-block;
+    height: 1em;
+    width: 1em;
+}
