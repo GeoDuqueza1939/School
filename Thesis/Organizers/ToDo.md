@@ -1,35 +1,33 @@
 To Do
 ---
 
-* <del>Revise *SOP* and *Objectives*</del>
-* <del>Setup web-based presentation</del>
-* <del>Setup web-based prototype</del>
-  <details><summary>Add themes to the web-based prototype's settings/preferences</summary>
-  * Blue Artpaper
-    > default blue-based theme
-  * Red Artpaper
-    > red-based theme
-  * Yellow Artpaper
-    > yellow-based theme
-  * Chalkboard
-    > green-based theme
-  * Whiteboard
-    > bright theme
-  * Blackboard
-    > dark theme
-  * Slate Tablet
-    > gray-based theme
-  * Clay Tablet
-    > cream- and brown-based theme
-  * Flower Garden
-    > pink-based theme</details>
-* <del>Revisit tool set</del>
-  * <del>Change presentation software from MS Powerpoint to reveal.js/slides.com</del>
-  * <del>Consider changing *Visual Studio with Xamarin* to *RAD Studio*</del>
-  * <del>Add VSCode and Sublime Text Editor to tools</del>
-* <del>Submit revisions</del>
-* Create To-Do items from thesis panel suggestions
-* Pre-define/pre-select plugins for target users/user types; survey their needs
-  > panel suggestion
-* Title and subtitle features a scope that is too broad, particularly because of the 'Administrator' reference
-  > panel comment
+- [x] Revise *SOP* and *Objectives*
+- [x] Setup web-based presentation
+- [x] Setup web-based prototype
+  - [ ] Add themes to the web-based prototype's settings/preferences
+    - [ ] Blue Poster *(blue-based theme - __default__)*
+    - [ ] Red Poster *(red-based theme)*
+    - [ ] Yellow Poster *(yellow-based theme)*
+    - [ ] Chalkboard *(green-based theme)*
+    - [ ] Whiteboard *(bright theme)*
+    - [ ] Blackboard *(dark theme)*
+    - [ ] Slate Tablet *(gray-based theme)*
+    - [ ] Clay Tablet *(cream- and brown-based theme)*
+    - [ ] Flower Garden *(pink-based theme)*
+- [x] Revisit tool set
+  - [x] Change presentation software from MS Powerpoint to [reveal.js](https://revealjs.com)/[slides.com](https://slides.com)
+  - [x] Consider changing *Visual Studio with Xamarin* to *RAD Studio*
+  - [x] Add *VSCode* and *Sublime Text Editor* to tools
+- [x] Submit revisions
+- [ ] Create To-Do items from thesis panel suggestions/comments
+- [ ] Pre-define/pre-select plugins for target users/user types; survey their needs *(panel suggestion)*
+- [ ] Title and subtitle features a scope that is too broad, particularly because of the *Administrator* reference in the **CASSY** acronym *(panel comment)*
+- [ ] Continue improving the prototype and its functions *(panel suggestion)*
+- [ ] *SOP* already defines the solution, which defeats the whole purpose of the paper *(panel comment)*
+- [ ] Follow the prescribed LCBA thesis format, particularly the IPO conceptual framework *(panel suggestion)*
+- [ ] Include involved institution names in the *Scope and Delimitation* section *(panel suggestion)*
+- [ ] Don't use *Wikipedia* as basis *(panel suggestion)*
+- [ ] Syntheses can't be found in *Chapter 2.* Use the prescribed pattern. *(panel suggestion)*
+- [ ] No need to use footnotes *(panel suggestion)*
+- [ ] Bibliography should be categorized *(panel suggestion)*
+- [ ] Include algorithms and design in *Chapter 3* *(panel suggestion)*
