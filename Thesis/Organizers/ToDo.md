@@ -5,7 +5,6 @@ To Do
 * <del>Setup web-based presentation</del>
 * <del>Setup web-based prototype</del>
   <details><summary>Add themes to the web-based prototype's settings/preferences</summary>
-	
   * Blue Artpaper
     > default blue-based theme
   * Red Artpaper
@@ -24,7 +23,6 @@ To Do
     > cream- and brown-based theme
   * Flower Garden
     > pink-based theme</details>
-    
 * <del>Revisit tool set</del>
   * <del>Change presentation software from MS Powerpoint to reveal.js/slides.com</del>
   * <del>Consider changing *Visual Studio with Xamarin* to *RAD Studio*</del>
