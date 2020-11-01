@@ -1,0 +1,30 @@
+===============================================================================
+[ TObjList Test Cases ]
+===============================================================================
+
+* TObjList<int>* List0
+	{}
+
+* TObjList<UnicodeString>* StrList0
+	{}
+
+* TObjList<int>* List1
+	{ 1 }
+
+* TObjList<UnicodeString>* StrList1
+	{ "some text" }
+
+* TObjList<int>* List2
+	{ -2 , -1 }
+
+* TObjList<UnicodeString>* StrList2
+	{ "x", "y" }
+
+* TObjList<int>* List3
+	{ 0 , 1, 2, 3 }
+
+* TObjList<UnicodeString>* StrList3
+	{ "A", "B", "C", "D" }
+		* "C"->Owner = other object
+
+

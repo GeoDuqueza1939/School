@@ -1,0 +1,28 @@
+* Create Plugin Interface/abstract class header in host app project. Import this header unto both host app and DLL plugin projects. Make sure to add the following virtual methods to this interface:
+	- an explicit object destroyer method
+	- a GetNavName method
+	- a GetNavImage method
+	- a GetUI method
+	- a GetSettingsUI method
+	- an Execute method
+	- a PluginName property
+	- a VersionString property
+	- an Author property
+	- an Org property
+* Implement the interface as a class/interface aggregate in the DLL plugin project. Export this class. Override all the virtual methods from the interface.
+* Create a container class for all the plugins. Each plugin shall be attached with several information, including, but not limited to, the following:
+	- a boolean value indicating that a plugin is a main tool
+	- a boolean value indicating that a plugin is enabled
+	- 
+
+
+ADDITIONAL NOTES:
+* ALWAYS DELETE AN IMPORTED OBJECT FROM WITHIN, NEVER FROM THE CALLING APPLICATION!!!
+* Host app will decide whether or not a plugin is a main tool.
+* Create separate .h and .cpp file for each unit.
+* Each plugin shall do the following, in definite order:
+	- create UI (contains all necessary methods)
+	- create nav button (contains events for accessing UI)
+	- create settings UI (contains all necessary methods)
+* Loading of plugins should be asynchronous to keep the main thread smooth.
+
