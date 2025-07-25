@@ -24,15 +24,7 @@ void main() {
     'profilePic': 'assets/images/profile-photo000.jpg',
   };
 
-  runApp(MaterialApp(
-      localizationsDelegates: [
-        GlobalMaterialLocalizations.delegate,
-        GlobalWidgetsLocalizations.delegate,
-        GlobalCupertinoLocalizations.delegate,
-      ],
-      title: '${user['fullName']} (Profile Page)',
-      home: AboutMe_Duqueza(user),
-    ));
+  runApp(AboutMe_Duqueza(user));
 }
 
 // ignore: camel_case_types, must_be_immutable
@@ -50,14 +42,31 @@ class AboutMe_Duqueza extends StatefulWidget {
 
 class _AboutMeState extends State<AboutMe_Duqueza> {
   Map<String, Object> user = {};
-  bool fabVisible = true;
+  bool fabVisible = false;
   bool profileDetailsVisible = false;
   List<Widget> visibleButtonLabel = <Widget>[
     Text('Show details', style: TextStyle(height: 1),),
     Icon(Icons.arrow_drop_down, semanticLabel: 'Show details',),
   ];
-  int _currentPageIndex = 1;
+  int _currentPageIndex = 0;
   List<Widget> _pages = [];
+  IconData darkModeIcon = Icons.dark_mode;
+  ThemeMode themeMode = ThemeMode.light;
+  ThemeData lightTheme = ThemeData(
+    colorScheme: ColorScheme.fromSeed(
+      seedColor: Colors.blueAccent,
+      brightness: Brightness.light,
+    ),
+    fontFamily: 'Lora',
+  );
+  ThemeData darkTheme = ThemeData(
+    colorScheme: ColorScheme.fromSeed(
+      seedColor: Colors.black54,
+      primary: Colors.grey,
+      brightness: Brightness.dark,
+    ),
+    fontFamily: 'Lora',
+  );
   
   _AboutMeState(this.user) {
     _setDefaultPages();
@@ -65,108 +74,156 @@ class _AboutMeState extends State<AboutMe_Duqueza> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(title: Text('${_getInfo('fullName')} (Profile Page)'), backgroundColor: Colors.blueAccent,),
-      drawer: Drawer(
-        child: ListView(
-          padding: EdgeInsets.zero,
-          children: <Widget>[
-            DrawerHeader(
-              child: UserAccountsDrawerHeader(
-                accountName: Text(_getInfo('fullName')),
-                accountEmail: Text(_getInfo('email')),
-                currentAccountPictureSize: Size.square(50),
-                currentAccountPicture: CircleAvatar(
-                  backgroundColor: Colors.grey,
-                  foregroundImage: AssetImage(_getInfo('profilePic')),
-                  child: Text(_getInfo('initials')),
+    return MaterialApp(
+      title: '${user['fullName']} (Profile Page)',
+      home: Builder(
+        builder: (context)=>Scaffold(
+          appBar: AppBar(
+            title: Text('${_getInfo('fullName')} (Profile Page)'),
+            backgroundColor: Theme.of(context).colorScheme.primary,
+          ),
+          drawer: Drawer(
+            child: ListView(
+              padding: EdgeInsets.zero,
+              children: <Widget>[
+                DrawerHeader(
+                  child: UserAccountsDrawerHeader(
+                    accountName: Text(_getInfo('fullName')),
+                    accountEmail: Text(_getInfo('email')),
+                    currentAccountPictureSize: Size.square(50),
+                    currentAccountPicture: CircleAvatar(
+                      // backgroundColor: Colors.grey,
+                      foregroundImage: AssetImage(_getInfo('profilePic')),
+                      child: Text(_getInfo('initials')),
+                    ),
+                  ),
                 ),
-              ),
-            ),
-            ListTile(
-              title: const Text('Home'),
-              leading: const Icon(Icons.home, color: Colors.black,),
-              onTap: () {
-                setState(() {
-                  Navigator.pop(context);
-                  _currentPageIndex = 0;
-                  fabVisible = false;
-                });
-              },
-            ),
-            ListTile(
-              title: const Text('My Profile'),
-              leading: const Icon(Icons.account_circle, color: Colors.black,),
-              onTap: () {
-                setState(() {
-                  Navigator.pop(context);
-                  _currentPageIndex = 1;
-                  fabVisible = true;
-                });
-              },
-            ),
-            ListTile(
-              title: const Text('My Contact Information'),
-              leading: const Icon(Icons.contact_page, color: Colors.black,),
-              onTap: () {
-                setState(() {
-                  Navigator.pop(context);
-                  _currentPageIndex = 2;
-                  fabVisible = false;
-                });
-              },
-
-            ),
-            ListTile(
-              title: const Text('Exit'),
-              leading: const Icon(Icons.exit_to_app, color: Colors.black,),
-              enabled: true,
-              onTap: () async {
-                final dev = DeviceInfoPlugin();
-                final devInfo = await dev.deviceInfo;
-                final allInfo = devInfo.data;
-
-                setState(() {
-                  String devType = (allInfo.containsKey('servicePackMajor') ? 'Windows'
-                    : (allInfo.containsKey('prettyName') ? 'Linux'
-                    : (allInfo.containsKey('osRelease') ? 'MacOS'
-                    : (allInfo.containsKey('utsname') ? 'IOS'
-                    : (allInfo.containsKey('systemFeatures') ? 'Android'
-                    : (allInfo.containsKey('browserName') ? 'Web'
-                    : 'unknown'))))));
-                      
-                  switch (devType) {
-                    case 'Windows': case 'Linux': case 'MacOS':
-                      exit(0);
-                      // ignore: dead_code
-                      break;
-                    case 'IOS': case 'Android':
-                      SystemNavigator.pop();
-                      break;
-                    case 'Web': case 'unknown':
+                ListTile(
+                  title: const Text('Home'),
+                  leading: const Icon(
+                    Icons.home,
+                    // color: Colors.black,
+                  ),
+                  onTap: () {
+                    setState(() {
                       Navigator.pop(context);
-                      _simpleMsg('To close this app, please close the browser tab or window manually.', title: 'About Me');
-                      break;
-                  }
-                });
-              },
+                      _currentPageIndex = 0;
+                      fabVisible = false;
+                    });
+                  },
+                ),
+                ListTile(
+                  title: const Text('My Profile'),
+                  leading: const Icon(
+                    Icons.account_circle,
+                    // color: Colors.black,
+                  ),
+                  onTap: () {
+                    setState(() {
+                      Navigator.pop(context);
+                      _currentPageIndex = 1;
+                      fabVisible = true;
+                    });
+                  },
+                ),
+                ListTile(
+                  title: const Text('My Contact Information'),
+                  leading: const Icon(
+                    Icons.contact_page,
+                    // color: Colors.black,
+                  ),
+                  onTap: () {
+                    setState(() {
+                      Navigator.pop(context);
+                      _currentPageIndex = 2;
+                      fabVisible = false;
+                    });
+                  },
+
+                ),
+                ListTile(
+                  title: const Text('Toggle Dark Mode'),
+                  leading: Icon(
+                    darkModeIcon,
+                    // color: Colors.black,
+                  ),
+                  onTap: () {
+                    setState(() {
+                      Navigator.pop(context);
+                      if (darkModeIcon == Icons.dark_mode) {
+                        darkModeIcon = Icons.sunny;
+                        themeMode = ThemeMode.dark;
+                      }
+                      else {
+                        darkModeIcon = Icons.dark_mode;
+                        themeMode = ThemeMode.light;
+                      }
+                    });
+                  },
+                ),
+                ListTile(
+                  title: const Text('Exit'),
+                  leading: const Icon(
+                    Icons.exit_to_app,
+                    // color: Colors.black,
+                  ),
+                  enabled: true,
+                  onTap: () async {
+                    final dev = DeviceInfoPlugin();
+                    final devInfo = await dev.deviceInfo;
+                    final allInfo = devInfo.data;
+
+                    setState(() {
+                      String devType = (allInfo.containsKey('servicePackMajor') ? 'Windows'
+                        : (allInfo.containsKey('prettyName') ? 'Linux'
+                        : (allInfo.containsKey('osRelease') ? 'MacOS'
+                        : (allInfo.containsKey('utsname') ? 'IOS'
+                        : (allInfo.containsKey('systemFeatures') ? 'Android'
+                        : (allInfo.containsKey('browserName') ? 'Web'
+                        : 'unknown'))))));
+                          
+                      switch (devType) {
+                        case 'Windows': case 'Linux': case 'MacOS':
+                          exit(0);
+                          // ignore: dead_code
+                          break;
+                        case 'IOS': case 'Android':
+                          SystemNavigator.pop();
+                          break;
+                        case 'Web': case 'unknown':
+                          Navigator.pop(context);
+                          _simpleMsg('To close this app, please close the browser tab or window manually.', title: 'About Me');
+                          break;
+                      }
+                    });
+                  },
+                ),
+              ],
             ),
-          ],
+          ),
+          floatingActionButton: Visibility(
+            visible: fabVisible,
+            child: FloatingActionButton(
+              tooltip: 'Toggle view details',
+              onPressed: _showDetails,
+              child: Icon(Icons.remove_red_eye_outlined),
+            ),
+          ),
+          body: Container(
+            // scrollDirection: Axis.vertical,
+            padding: EdgeInsets.all(15),
+            child: _pages[_currentPageIndex],
+          ),
         ),
       ),
-      floatingActionButton: Visibility(
-        visible: fabVisible,
-        child: FloatingActionButton(
-          tooltip: 'Toggle view details',
-          onPressed: _showDetails,
-          child: Icon(Icons.remove_red_eye_outlined),
-        ),
-      ),
-      body: Container(
-        // scrollDirection: Axis.vertical,
-        padding: EdgeInsets.all(15),
-        child: _pages[_currentPageIndex],
-      ),
+      theme: lightTheme,
+      darkTheme: darkTheme,
+      themeMode: themeMode,
+      localizationsDelegates: [
+        GlobalMaterialLocalizations.delegate,
+        GlobalWidgetsLocalizations.delegate,
+        GlobalCupertinoLocalizations.delegate,
+      ],
     );
   }
 
@@ -195,7 +252,6 @@ class _AboutMeState extends State<AboutMe_Duqueza> {
   }
 
   void _showDetails() {
-
     setState(() {
       profileDetailsVisible = !profileDetailsVisible;
 
@@ -216,7 +272,7 @@ class _AboutMeState extends State<AboutMe_Duqueza> {
     return Center(
       child: Card(
         elevation: 5,
-        color: Colors.grey[400],
+        // color: Colors.grey[400],
         child: Container(            
           padding: EdgeInsets.all(15),
           child: Column(
@@ -228,7 +284,7 @@ class _AboutMeState extends State<AboutMe_Duqueza> {
                   CircleAvatar(
                     minRadius: 25,
                     maxRadius: 75,
-                    backgroundColor: Colors.grey,
+                    // backgroundColor: Colors.grey,
                     foregroundImage: AssetImage(_getInfo('profilePic')),
                     child: Text('GD'),
                   ),
@@ -241,7 +297,7 @@ class _AboutMeState extends State<AboutMe_Duqueza> {
                         Text(_getInfo('fullName').toUpperCase(), style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16,),),
                         Text('${_getInfo('age')} years old',),
                         SizedBox(height: 12),
-                        Text(_getInfo('bio'), style: TextStyle(fontStyle: FontStyle.italic),),
+                        Text(_getInfo('bio'), style: TextStyle(fontFamily: 'Dancing Script', fontSize: 18),),
                       ],
                     ),
                   ),

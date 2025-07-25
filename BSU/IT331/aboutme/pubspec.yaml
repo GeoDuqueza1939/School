@@ -22,3 +22,11 @@ flutter:
   uses-material-design: true
   assets:
     - assets/images/
+  fonts:
+    - family: 'Dancing Script'
+      fonts:
+        - asset: assets/fonts/DancingScript-VariableFont_wght.ttf
+    - family: Lora
+      fonts:
+        - asset: assets/fonts/Lora-VariableFont_wght.ttf
+        - asset: assets/fonts/Lora-Italic-VariableFont_wght.ttf
