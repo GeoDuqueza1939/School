@@ -4,6 +4,8 @@
 // Author:        Geovani P. Duqueza
 //==============================================================
 
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:device_info_plus/device_info_plus.dart';
@@ -104,35 +106,53 @@ class _TassyAppState extends State<TassyApp> {
   }
 }
 
-class _TassyMainState extends State<TassyMain> with MsgBox {
-  List<Widget> pages = [];
+class _TassyMainState extends State<TassyMain> with SingleTickerProviderStateMixin, MsgBoxMixin {
+  late List<Widget> _tabbedPages = [];
+  List<Tab> _tabs = [];
+  TabController? _tabController;
   // ignore: prefer_final_fields
   int _currentPage = 0;
 
-  _TassyMainState() {
-    pages = generatePages();
+  @override
+  void initState() {
+    super.initState();
+    _tabs = _generateTabs();
   }
 
   @override
   Widget build(BuildContext context) {
+    _tabbedPages = _generateTabbedPages();
+    _tabController = TabController(
+      length: min(_tabs.length, _tabbedPages.length),
+      vsync: this,
+    );
+
     return Scaffold(
       appBar: AppBar(
         title: Text(context.findAncestorWidgetOfExactType<TassyApp>()!.title),
         backgroundColor: Theme.of(context).colorScheme.primary,
         foregroundColor: Theme.of(context).colorScheme.onPrimary,
-      ),
-      drawer: generateDrawer(context),
-      body: Container(
-        // decoration: BoxDecoration(color: Theme.of(context).colorScheme.secondaryContainer),
-        // margin: EdgeInsets.all(0),
-        child: Center(
-          child: SingleChildScrollView(
-            scrollDirection: Axis.vertical,
-            padding: EdgeInsets.all(10),
-            child: pages[_currentPage],
-          ),
+        bottom: TabBar(
+          controller: _tabController,
+          tabs: _tabs,
         ),
       ),
+      drawer: _generateDrawer(context),
+      body: TabBarView(
+        controller: _tabController,
+        children: _tabbedPages,
+      ),
+      // Container(
+      //   // decoration: BoxDecoration(color: Theme.of(context).colorScheme.secondaryContainer),
+      //   // margin: EdgeInsets.all(0),
+      //   child: Center(
+      //     child: SingleChildScrollView(
+      //       scrollDirection: Axis.vertical,
+      //       padding: EdgeInsets.all(10),
+      //       child: _pages[_currentPage],
+      //     ),
+      //   ),
+      // ),
       floatingActionButton: FloatingActionButton.extended( // FOR TESTING ONLY
         label: Text("Theme: ${(context.findAncestorStateOfType<_TassyAppState>() as _TassyAppState).selectedThemeName}"),
         onPressed: () {
@@ -156,7 +176,7 @@ class _TassyMainState extends State<TassyMain> with MsgBox {
     );
   }
 
-  Widget generateDrawer(BuildContext context) {
+  Widget _generateDrawer(BuildContext context) {
     return Drawer(
       child: ListView(
         padding: EdgeInsets.zero,
@@ -214,7 +234,15 @@ class _TassyMainState extends State<TassyMain> with MsgBox {
     );
   }
 
-  List<Widget> generatePages() {
+  List<Tab> _generateTabs() {
+    return <Tab>[
+      Tab(icon: Icon(Icons.home_rounded), text: "Home",),
+      Tab(icon: Icon(Icons.task_rounded), text: "Tasks",),
+      Tab(icon: Icon(Icons.account_circle), text: "User",),
+    ];
+  }
+
+  List<Widget> _generateTabbedPages() {
     return <Widget>[
       Container(
         child: Text("Home"),
@@ -269,7 +297,7 @@ class _TassyMainState extends State<TassyMain> with MsgBox {
           break;
       }
     });
-  }
+  }  
 }
 
 class _TassySettingsState extends State<TassySettings> {
@@ -304,7 +332,7 @@ class _TassyTaskEditorState extends State<TassyTaskEditor> {
 // #endregion
 
 // #region Dialog boxes
-mixin MsgBox {
+mixin MsgBoxMixin {
   Future _simpleMsg(BuildContext context, String msg, {String title = ""}) {
     return showDialog(
       context: context, 
