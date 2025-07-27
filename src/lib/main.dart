@@ -29,21 +29,21 @@ class TassyApp extends StatefulWidget {
   const TassyApp({super.key, required this.title, required this.appTitle});
 
   @override
-  TassyAppState createState() => TassyAppState();
+  State<TassyApp> createState() => _TassyAppState();
 }
 
 class TassyMain extends StatefulWidget {
   const TassyMain({super.key});
 
   @override
-  TassyMainState createState() => TassyMainState();
+  State<TassyMain> createState() => _TassyMainState();
 }
 
 class TassySettings extends StatefulWidget {
   const TassySettings({super.key});
 
   @override
-  TassySettingsState createState() => TassySettingsState();
+  State<TassySettings> createState() => _TassySettingsState();
 }
 
 class TassyTaskEditor extends StatefulWidget {
@@ -52,12 +52,12 @@ class TassyTaskEditor extends StatefulWidget {
   const TassyTaskEditor(this.mode, {super.key});
 
   @override
-  TassyTaskEditorState createState() => TassyTaskEditorState();
+  State<TassyTaskEditor> createState() => _TassyTaskEditorState();
 }
 // #endregion
 
 // #region States
-class TassyAppState extends State<TassyApp> {
+class _TassyAppState extends State<TassyApp> {
   Map<String, ThemeData> themes = {}, darkThemes = {};
   ThemeMode themeMode = ThemeMode.light;
   String selectedThemeName = "MEADOW";
@@ -104,12 +104,12 @@ class TassyAppState extends State<TassyApp> {
   }
 }
 
-class TassyMainState extends State<TassyMain> with MsgBox {
+class _TassyMainState extends State<TassyMain> with MsgBox {
   List<Widget> pages = [];
   // ignore: prefer_final_fields
   int _currentPage = 0;
 
-  TassyMainState() {
+  _TassyMainState() {
     pages = generatePages();
   }
 
@@ -134,9 +134,9 @@ class TassyMainState extends State<TassyMain> with MsgBox {
         ),
       ),
       floatingActionButton: FloatingActionButton.extended( // FOR TESTING ONLY
-        label: Text("Theme: ${(context.findAncestorStateOfType<TassyAppState>() as TassyAppState).selectedThemeName}"),
+        label: Text("Theme: ${(context.findAncestorStateOfType<_TassyAppState>() as _TassyAppState).selectedThemeName}"),
         onPressed: () {
-          TassyAppState appState = context.findAncestorStateOfType<TassyAppState>() as TassyAppState;
+          _TassyAppState appState = context.findAncestorStateOfType<_TassyAppState>() as _TassyAppState;
           Iterator<String> it = appState.seedColors.keys.iterator;
           while (it.moveNext()) {
             if (appState.selectedThemeName == it.current) {
@@ -272,7 +272,7 @@ class TassyMainState extends State<TassyMain> with MsgBox {
   }
 }
 
-class TassySettingsState extends State<TassySettings> {
+class _TassySettingsState extends State<TassySettings> {
   @override
   Widget build(Object context) {
     return Scaffold(
@@ -281,7 +281,7 @@ class TassySettingsState extends State<TassySettings> {
   }
 }
 
-class TassyTaskEditorState extends State<TassyTaskEditor> {
+class _TassyTaskEditorState extends State<TassyTaskEditor> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -301,6 +301,9 @@ class TassyTaskEditorState extends State<TassyTaskEditor> {
   }
 }
 
+// #endregion
+
+// #region Dialog boxes
 mixin MsgBox {
   Future _simpleMsg(BuildContext context, String msg, {String title = ""}) {
     return showDialog(
