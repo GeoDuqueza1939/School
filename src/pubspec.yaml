@@ -36,6 +36,7 @@ dependencies:
   cupertino_icons: ^1.0.8
   string_to_color: ^2.0.0
   window_size: ^0.1.0
+  device_info_plus: ^11.5.0
 
 dev_dependencies:
   flutter_test:
