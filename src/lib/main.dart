@@ -61,7 +61,7 @@ class TassyTaskEditor extends StatefulWidget {
 // #region States
 class _TassyAppState extends State<TassyApp> {
   Map<String, ThemeData> themes = {}, darkThemes = {};
-  ThemeMode themeMode = ThemeMode.light;
+  ThemeMode themeMode = ThemeMode.dark;
   String selectedThemeName = "MEADOW";
   Map<String, String> seedColors = {
     "MEADOW": "silver",
@@ -106,12 +106,10 @@ class _TassyAppState extends State<TassyApp> {
   }
 }
 
-class _TassyMainState extends State<TassyMain> with SingleTickerProviderStateMixin, MsgBoxMixin {
+class _TassyMainState extends State<TassyMain> with TickerProviderStateMixin, MsgBoxMixin {
   late List<Widget> _tabbedPages = [];
-  List<Tab> _tabs = [];
+  late List<Tab> _tabs = [];
   TabController? _tabController;
-  // ignore: prefer_final_fields
-  int _currentPage = 0;
 
   @override
   void initState() {
@@ -135,6 +133,8 @@ class _TassyMainState extends State<TassyMain> with SingleTickerProviderStateMix
         bottom: TabBar(
           controller: _tabController,
           tabs: _tabs,
+          labelColor: Theme.of(context).colorScheme.onPrimary,
+          unselectedLabelColor: Theme.of(context).colorScheme.onPrimaryContainer,
         ),
       ),
       drawer: _generateDrawer(context),
@@ -142,37 +142,7 @@ class _TassyMainState extends State<TassyMain> with SingleTickerProviderStateMix
         controller: _tabController,
         children: _tabbedPages,
       ),
-      // Container(
-      //   // decoration: BoxDecoration(color: Theme.of(context).colorScheme.secondaryContainer),
-      //   // margin: EdgeInsets.all(0),
-      //   child: Center(
-      //     child: SingleChildScrollView(
-      //       scrollDirection: Axis.vertical,
-      //       padding: EdgeInsets.all(10),
-      //       child: _pages[_currentPage],
-      //     ),
-      //   ),
-      // ),
-      floatingActionButton: FloatingActionButton.extended( // FOR TESTING ONLY
-        label: Text("Theme: ${(context.findAncestorStateOfType<_TassyAppState>() as _TassyAppState).selectedThemeName}"),
-        onPressed: () {
-          _TassyAppState appState = context.findAncestorStateOfType<_TassyAppState>() as _TassyAppState;
-          Iterator<String> it = appState.seedColors.keys.iterator;
-          while (it.moveNext()) {
-            if (appState.selectedThemeName == it.current) {
-              setState(() {
-                if (it.moveNext()) {
-                  appState.selectTheme(it.current);
-                }
-                else {
-                  appState.selectTheme(appState.seedColors.keys.first);
-                }
-              });
-              break;
-            }
-          }
-        },
-      ),
+      floatingActionButton: _tempFAB(),
     );
   }
 
@@ -193,7 +163,7 @@ class _TassyMainState extends State<TassyMain> with SingleTickerProviderStateMix
             leading: Icon(Icons.home_rounded),
             title: Text("Home"),
             onTap: () {
-              viewPage(0);
+              viewTabbedPage(0);
             },
           ),
           ListTile(
@@ -207,14 +177,14 @@ class _TassyMainState extends State<TassyMain> with SingleTickerProviderStateMix
             leading: Icon(Icons.task_rounded),
             title: Text("View Tasks"),
             onTap: () {
-              viewPage(1);
+              viewTabbedPage(1);
             },
           ),
           ListTile(
             leading: Icon(Icons.account_circle),
             title: Text("User Profile"),
             onTap: () {
-              viewPage(2);
+              viewTabbedPage(2);
             },
           ),
           ListTile(
@@ -256,12 +226,10 @@ class _TassyMainState extends State<TassyMain> with SingleTickerProviderStateMix
     ];
   }
 
-  void viewPage(int num) 
+  void viewTabbedPage(int num) 
   {
-    setState(() {
-      Navigator.pop(context);
-      _currentPage = num;
-    });
+    Navigator.pop(context);
+    _tabController!.index = num;
   }
 
   void viewRoute(WidgetBuilder f) {
@@ -297,7 +265,26 @@ class _TassyMainState extends State<TassyMain> with SingleTickerProviderStateMix
           break;
       }
     });
-  }  
+  }
+  
+  FloatingActionButton _tempFAB() { // FOR TESTING ONLY
+    _TassyAppState appState = context.findAncestorStateOfType<_TassyAppState>() as _TassyAppState;
+
+    return FloatingActionButton.extended(
+      label: Text("Theme: ${(appState).selectedThemeName}"),
+      onPressed: () {
+        Iterator<String> it = appState.seedColors.keys.iterator;
+        while (it.moveNext()) {
+          if (appState.selectedThemeName == it.current) {
+            setState(() {
+              appState.selectTheme(it.moveNext() ? it.current : appState.seedColors.keys.first);
+            });
+            break;
+          }
+        }
+      },
+    )
+  }
 }
 
 class _TassySettingsState extends State<TassySettings> {
