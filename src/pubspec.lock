@@ -176,6 +176,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "1.4.1"
+  string_to_color:
+    dependency: "direct main"
+    description:
+      name: string_to_color
+      sha256: cb33e3fd98c3005ac088bd2f3eac5fef9fac5a36ca7364766087cdbd9ca6f1a7
+      url: "https://pub.dev"
+    source: hosted
+    version: "2.0.0"
   term_glyph:
     dependency: transitive
     description:
@@ -208,6 +216,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "15.0.0"
+  window_size:
+    dependency: "direct main"
+    description:
+      name: window_size
+      sha256: "8ba77a3df7bd686e60b21e699e60e1b103e6515950954b46c4fb6f513586e278"
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.1.0"
 sdks:
   dart: ">=3.8.1 <4.0.0"
   flutter: ">=3.18.0-18.0.pre.54"
