@@ -37,6 +37,7 @@ dependencies:
   string_to_color: ^2.0.0
   window_size: ^0.1.0
   device_info_plus: ^11.5.0
+  intl: ^0.20.2
 
 dev_dependencies:
   flutter_test:

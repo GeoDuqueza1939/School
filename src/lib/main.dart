@@ -8,6 +8,7 @@ import 'dart:math';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:intl/intl.dart';
 import 'package:device_info_plus/device_info_plus.dart';
 import 'package:string_to_color/string_to_color.dart';
 import 'package:window_size/window_size.dart';
@@ -56,12 +57,37 @@ class TassyTaskEditor extends StatefulWidget {
   @override
   State<TassyTaskEditor> createState() => _TassyTaskEditorState();
 }
+
+class TaskList extends StatelessWidget {
+  // ignore: library_private_types_in_public_api
+  final _TassyAppState appState;
+
+  // ignore: library_private_types_in_public_api
+  const TaskList(this.appState, {super.key});
+  
+  @override
+  Widget build(BuildContext context) {
+    return ListView(
+      children: appState.tasks.map((task)=>TaskTile(task, this)).toList(),
+    );
+  }
+}
+
+class TaskTile extends StatefulWidget {
+  final TassyTask task;
+  final TaskList taskList;
+
+  const TaskTile(this.task, this.taskList, {super.key});
+
+  @override
+  State<StatefulWidget> createState()=>_TaskTileState();
+}
 // #endregion
 
 // #region States
 class _TassyAppState extends State<TassyApp> with _AppStateMixin {
   Map<String, ThemeData> themes = {}, darkThemes = {};
-  ThemeMode themeMode = ThemeMode.dark;
+  ThemeMode themeMode = ThemeMode.light;
   String selectedThemeName = "MEADOW";
   Map<String, String> seedColors = {
     "MEADOW": "silver",
@@ -73,17 +99,22 @@ class _TassyAppState extends State<TassyApp> with _AppStateMixin {
     "WARM": "orange",
   };
   late TassyUser user;
+  List<TassyTask> tasks = [];
 
   @override
   void initState() {
     super.initState();
 
     user = retrieveUser();
+
+    tasks = retrieveTasks();
   }
 
   @override
   Widget build(BuildContext context) {
     retrieveThemes();
+    user = retrieveUser();
+    tasks = retrieveTasks();
 
     return MaterialApp(
       title: widget.appTitle,
@@ -94,18 +125,6 @@ class _TassyAppState extends State<TassyApp> with _AppStateMixin {
     );
   }
   
-  TassyUser retrieveUser() { // TEMPORARY DATA ONLY
-    return TassyUser(
-      name: "Geovani Duqueza",
-      nickname: "Geo",
-      position: "Administrative Assistant III",
-      officeUnit: "OSDS-Personnel Unit",
-      company: "Department of Education \u2013 Sto. Tomas City",
-      phoneNumbers: ["09153032914", "09295015297"],
-      emailAddresses: ["geovani.duqueza@deped.gov.ph", "24-00901@g.batstate-u.edu.ph"],
-    );
-  }
-
   void retrieveThemes() { // autogenerate themes according to the provided color seeds; other custom themes may be added after the loop
     List<String> colors = seedColors.keys.toList();
 
@@ -117,6 +136,55 @@ class _TassyAppState extends State<TassyApp> with _AppStateMixin {
         colorScheme: ColorScheme.fromSeed(seedColor: ColorUtils.stringToColor(seedColors[color] as String), brightness: Brightness.dark),
       );
     }
+  }
+
+  TassyUser retrieveUser() { // TEMPORARY DATA ONLY
+    return TassyUser(
+      id: 0,
+      name: "Geovani Duqueza",
+      nickname: "Geo",
+      position: "Administrative Assistant III",
+      officeUnit: "OSDS-Personnel Unit",
+      company: "Department of Education \u2013 Sto. Tomas City",
+      phoneNumbers: ["09153032914", "09295015297"],
+      emailAddresses: ["geovani.duqueza@deped.gov.ph", "24-00901@g.batstate-u.edu.ph"],
+    );
+  }
+
+  List<TassyTask> retrieveTasks() { // TEMPORARY DATA ONLY
+    return <TassyTask>[
+      TassyTask(
+        id: 0,
+        "Work",
+      ),
+      TassyTask(
+        id: 1,
+        "Go to the market",
+        description: "Buy tomatoes, potatoes, and onions",
+        schedule: DateTime(2025, 8, 1, 8),
+      ),
+      TassyTask(
+        id: 2,
+        "School",
+        description: "Submit project",
+        schedule: DateTime(2025, 7, 30),
+      ),
+      TassyTask(
+        id: 3,
+        "Meeting",
+        description: "Office unit",
+        schedule: DateTime(2025, 7, 31, 9),
+        duration: 1.5,
+        durationUnit: TimeUnit.hour,
+        reminders: <TassyReminder>[
+          TassyReminder(
+            DateTime(2025, 7, 31, 8,55),
+            snoozeDuration: 5,
+            snoozeUnit: TimeUnit.minute,
+          )
+        ],
+      ),
+    ];
   }
 
   void selectTheme(String themeName) {
@@ -136,6 +204,7 @@ class _TassyMainState extends State<TassyMain> with TickerProviderStateMixin, Ms
   late List<Widget> _tabbedPages = [];
   late List<Tab> _tabs = [];
   TabController? _tabController;
+  int _lastPage = 0;
 
   @override
   void initState() {
@@ -147,6 +216,7 @@ class _TassyMainState extends State<TassyMain> with TickerProviderStateMixin, Ms
   Widget build(BuildContext context) {
     _tabbedPages = _generateTabbedPages();
     _tabController = TabController(
+      initialIndex: _lastPage,
       length: min(_tabs.length, _tabbedPages.length),
       vsync: this,
     );
@@ -281,9 +351,7 @@ class _TassyMainState extends State<TassyMain> with TickerProviderStateMixin, Ms
       ),
       Container(
         padding: EdgeInsets.fromLTRB(25, 25, 25, 25),
-        child: SingleChildScrollView(
-          child: Text("View Tasks"),
-        ),
+        child: TaskList(appState),
       ),
       Container(
         padding: EdgeInsets.fromLTRB(25, 25, 25, 25),
@@ -320,6 +388,7 @@ class _TassyMainState extends State<TassyMain> with TickerProviderStateMixin, Ms
 
   void viewTabbedPage(int num, {bool fromDrawer = false}) 
   {
+    if (_lastPage != 0) _lastPage = 0; // set to default;
     if (fromDrawer) Navigator.pop(context);
     _tabController!.index = num;
   }
@@ -356,6 +425,13 @@ class _TassyMainState extends State<TassyMain> with TickerProviderStateMixin, Ms
           _simpleMsg(context, 'To close this app, please close the browser tab or window manually.', title: (context.findAncestorWidgetOfExactType<TassyApp>() as TassyApp).title);
           break;
       }
+    });
+  }
+  
+  void removeTask(TassyTask task, {bool currentViewIsMain = true, int index = 1}) {
+    setState(() {
+      _getAppState(context).tasks.removeWhere((checkTask)=>(checkTask.id == task.id));
+      if (currentViewIsMain) _lastPage = index;
     });
   }
   
@@ -440,6 +516,7 @@ class _TassySettingsState extends State<TassySettings> with _AppStateMixin {
 }
 
 class _TassyTaskEditorState extends State<TassyTaskEditor> {
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -458,6 +535,66 @@ class _TassyTaskEditorState extends State<TassyTaskEditor> {
     );
   }
 }
+
+class _TaskTileState extends State<TaskTile> with _AppStateMixin, _MainStateMixin, MsgBoxMixin {
+  @override
+  initState() {
+    super.initState();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    String taskTitle = widget.task.taskName.trim();
+    String taskSubtitle = (widget.task.description.trim() == "" ? "" : widget.task.description.trim());
+
+    taskSubtitle += (taskSubtitle == "" ? "" : "\n") + (widget.task.schedule == null ? "" : "Schedule: ${DateFormat("MM/dd/yyyy${(widget.task.schedule!.hour == 0 && widget.task.schedule!.minute == 0 && widget.task.schedule!.second == 0 ? "" : " hh:mm aaa")}").format(widget.task.schedule!)}");
+
+    return ListTile(
+      leading: Visibility(
+        visible: true,
+        child: _generateCheckbox(),
+      ),
+      title: Text(taskTitle, style: TextStyle(fontWeight: FontWeight.bold)),
+      subtitle: Text(taskSubtitle),
+      trailing: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: _generateIconButtonList(),
+      ),
+      onTap: () {
+        setState(() {
+          widget.task.done = !widget.task.done;
+        });
+      },
+    );
+  }
+
+  Checkbox _generateCheckbox() {
+    return Checkbox(
+      value: widget.task.done,
+      onChanged: (bool? value) {  },
+      
+    );
+  }
+  
+  List<Widget> _generateIconButtonList() {
+    return <Widget>[
+      IconButton(
+        tooltip: "Edit",
+        onPressed: () {
+          
+        },
+        icon: Icon(Icons.edit_rounded),
+      ),
+      IconButton(
+        tooltip: "Delete",
+        onPressed: () {
+          _dialogYesNo(context, "Delete this task?", (() { _getMainState(context).removeTask(widget.task); Navigator.of(context).pop(); }), (() { Navigator.of(context).pop(); }), title: _getAppState(context).widget.title);
+        },
+        icon: Icon(Icons.delete_rounded),
+      ),
+    ];
+  }
+}
 // #endregion
 
 // #region Dialog boxes
@@ -471,10 +608,32 @@ mixin MsgBoxMixin {
           content: Text(msg),
           actions: [
             TextButton(
-              child: const Text("OK"),
               onPressed: () {
                 Navigator.of(context).pop();
               },
+              child: const Text("OK"),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  Future _dialogYesNo(BuildContext context, String msg, void Function() fyes, void Function() fno, {String title = ""}) {
+    return showDialog(
+      context: context, 
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text(title),
+          content: Text(msg),
+          actions: [
+            TextButton(
+              onPressed: fyes,
+              child: const Text("Yes"),
+            ),
+            TextButton(
+              onPressed: fno,
+              child: const Text("No"),
             ),
           ],
         );
@@ -486,6 +645,12 @@ mixin MsgBoxMixin {
 mixin _AppStateMixin {
   _TassyAppState _getAppState(BuildContext context) {
     return context.findAncestorStateOfType<_TassyAppState>() as _TassyAppState;
+  }
+}
+
+mixin _MainStateMixin {
+  _TassyMainState _getMainState(BuildContext context) {
+    return context.findAncestorStateOfType<_TassyMainState>() as _TassyMainState;
   }
 }
 // #endregion
@@ -500,14 +665,16 @@ enum TimeUnit {
 }
 
 class TassyTask {
-  String? taskName;
-  String? description;
+  int id; // negative id for new tasks
+  String taskName;
+  String description;
   DateTime? schedule;
   double duration;
   TimeUnit durationUnit;
-  List<TassyReminder>? reminders;
+  List<TassyReminder> reminders = [];
+  bool done = false;
 
-  TassyTask(this.taskName, {this.description, this.schedule, this.duration = 0, this.durationUnit = TimeUnit.hour, this.reminders});
+  TassyTask(this.taskName, {this.description = "", this.schedule, this.duration = 0, this.durationUnit = TimeUnit.hour, List<TassyReminder>? reminders, this.done = false, this.id = -1});
 }
 
 class TassyReminder {
@@ -516,7 +683,7 @@ class TassyReminder {
   TimeUnit _snoozeUnit = TimeUnit.minute;
 
   TassyReminder(this.alarm, {double snoozeDuration = 0, TimeUnit snoozeUnit = TimeUnit.minute}) {
-    setSnooze(snoozeDuration, unit: snoozeUnit);
+    setSnooze(snoozeDuration, unit: snoozeUnit); 
   }
 
   void setSnooze(double duration, {TimeUnit unit = TimeUnit.minute}) {
@@ -550,6 +717,7 @@ class TassyReminder {
 }
 
 class TassyUser {
+  int id; // negative id for new user
   String name = "New User";
   String nickname = "";
   String position = "";
@@ -558,7 +726,7 @@ class TassyUser {
   late List<String> _phoneNumbers;
   late List<String> _emailAddresses;
 
-  TassyUser({this.name = "New User", this.nickname = "", this.position = "", this.officeUnit = "", this.company = "", List<String>? phoneNumbers, List<String>? emailAddresses}) {
+  TassyUser({this.name = "New User", this.nickname = "", this.position = "", this.officeUnit = "", this.company = "", List<String>? phoneNumbers, List<String>? emailAddresses, this.id = -1}) {
     _phoneNumbers = [];
     _emailAddresses = [];
 
