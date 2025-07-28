@@ -104,9 +104,15 @@ class _TassyAppState extends State<TassyApp> {
       selectedThemeName = themeName;
     });
   }
+
+  void turnOnDarkTheme(bool value) {
+    setState(() {
+      themeMode = (value ? ThemeMode.dark : ThemeMode.light);
+    });
+  }
 }
 
-class _TassyMainState extends State<TassyMain> with TickerProviderStateMixin, MsgBoxMixin {
+class _TassyMainState extends State<TassyMain> with TickerProviderStateMixin, MsgBoxMixin, _AppStateMixin {
   late List<Widget> _tabbedPages = [];
   late List<Tab> _tabs = [];
   TabController? _tabController;
@@ -268,7 +274,7 @@ class _TassyMainState extends State<TassyMain> with TickerProviderStateMixin, Ms
   }
   
   FloatingActionButton _tempFAB() { // FOR TESTING ONLY
-    _TassyAppState appState = context.findAncestorStateOfType<_TassyAppState>() as _TassyAppState;
+    _TassyAppState appState = _getAppState(context);
 
     return FloatingActionButton.extended(
       label: Text("Theme: ${(appState).selectedThemeName}"),
@@ -283,15 +289,66 @@ class _TassyMainState extends State<TassyMain> with TickerProviderStateMixin, Ms
           }
         }
       },
-    )
+    );
   }
 }
 
-class _TassySettingsState extends State<TassySettings> {
+// THIS WIDGET OF THIS STATE MIGHT BE BETTER OFF AS A STATELESS WIDGET
+class _TassySettingsState extends State<TassySettings> with _AppStateMixin {
+  bool darkModeSwitchValue = false;
+  late _TassyAppState appState;
+  String selectedThemeName = "";
+  List<String> themeNames = [];
+
   @override
-  Widget build(Object context) {
+  void initState() {
+    super.initState();
+    appState = _getAppState(context);
+    darkModeSwitchValue = (appState.themeMode == ThemeMode.dark);
+    selectedThemeName = appState.selectedThemeName;
+    themeNames = (darkModeSwitchValue ? appState.darkThemes.keys : appState.themes.keys).toList();
+  }
+
+  @override
+  Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(title: Text("Settings")),
+      body: SingleChildScrollView(
+        padding: EdgeInsets.all(20),
+        child: Column(
+          children: <Widget>[
+            SwitchListTile(
+              title: const Text("Dark Mode"),
+              value: darkModeSwitchValue,
+              onChanged: (bool value) {
+                darkModeSwitchValue = value;
+                appState.turnOnDarkTheme(value);
+                themeNames = (darkModeSwitchValue ? appState.darkThemes.keys : appState.themes.keys).toList();
+              },
+            ),
+            ListTile(
+              title: Text("Select theme:"),
+              tileColor: Theme.of(context).colorScheme.primary,
+              textColor: Theme.of(context).colorScheme.onPrimary,
+              trailing: DropdownButton<String>(
+                dropdownColor: Theme.of(context).colorScheme.primary,
+                value: selectedThemeName,
+                items: themeNames.map((themeName)=>DropdownMenuItem<String>(
+                  value: themeName,
+                  child: Text(
+                    themeName,
+                    style: TextStyle(color: Theme.of(context).colorScheme.onPrimary),
+                  ),
+                )).toList(),
+                onChanged: (String? value) {
+                  selectedThemeName = value!;
+                  appState.selectTheme(selectedThemeName);
+                },
+              ),
+            ),
+          ],
+        ),
+      ),
     );
   }
 }
@@ -315,7 +372,6 @@ class _TassyTaskEditorState extends State<TassyTaskEditor> {
     );
   }
 }
-
 // #endregion
 
 // #region Dialog boxes
@@ -338,6 +394,12 @@ mixin MsgBoxMixin {
         );
       },
     );
+  }
+}
+
+mixin _AppStateMixin {
+  _TassyAppState _getAppState(BuildContext context) {
+    return context.findAncestorStateOfType<_TassyAppState>() as _TassyAppState;
   }
 }
 // #endregion
