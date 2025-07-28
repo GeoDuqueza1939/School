@@ -59,7 +59,7 @@ class TassyTaskEditor extends StatefulWidget {
 // #endregion
 
 // #region States
-class _TassyAppState extends State<TassyApp> {
+class _TassyAppState extends State<TassyApp> with _AppStateMixin {
   Map<String, ThemeData> themes = {}, darkThemes = {};
   ThemeMode themeMode = ThemeMode.dark;
   String selectedThemeName = "MEADOW";
@@ -72,6 +72,14 @@ class _TassyAppState extends State<TassyApp> {
     "TEAL": "blueAccent",
     "WARM": "orange",
   };
+  late TassyUser user;
+
+  @override
+  void initState() {
+    super.initState();
+
+    user = retrieveUser();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -83,6 +91,18 @@ class _TassyAppState extends State<TassyApp> {
       theme: themes[(selectedThemeName == "dark" ? "bright" : selectedThemeName)],
       darkTheme: darkThemes[(selectedThemeName == "bright" ? "dark" : selectedThemeName)],
       themeMode: themeMode,
+    );
+  }
+  
+  TassyUser retrieveUser() { // TEMPORARY DATA ONLY
+    return TassyUser(
+      name: "Geovani Duqueza",
+      nickname: "Geo",
+      position: "Administrative Assistant III",
+      officeUnit: "OSDS-Personnel Unit",
+      company: "Department of Education \u2013 Sto. Tomas City",
+      phoneNumbers: ["09153032914", "09295015297"],
+      emailAddresses: ["geovani.duqueza@deped.gov.ph", "24-00901@g.batstate-u.edu.ph"],
     );
   }
 
@@ -169,35 +189,35 @@ class _TassyMainState extends State<TassyMain> with TickerProviderStateMixin, Ms
             leading: Icon(Icons.home_rounded),
             title: Text("Home"),
             onTap: () {
-              viewTabbedPage(0);
+              viewTabbedPage(0, fromDrawer: true);
             },
           ),
           ListTile(
             leading: Icon(Icons.add_task_rounded),
             title: Text("New Task"),
             onTap: () {
-              viewRoute((context) => TassyTaskEditor(EditorMode.add));
+              viewRoute((context) => TassyTaskEditor(EditorMode.add), fromDrawer: true);
             },
           ),
           ListTile(
             leading: Icon(Icons.task_rounded),
             title: Text("View Tasks"),
             onTap: () {
-              viewTabbedPage(1);
+              viewTabbedPage(1, fromDrawer: true);
             },
           ),
           ListTile(
             leading: Icon(Icons.account_circle),
             title: Text("User Profile"),
             onTap: () {
-              viewTabbedPage(2);
+              viewTabbedPage(2, fromDrawer: true);
             },
           ),
           ListTile(
             leading: Icon(Icons.settings_rounded),
             title: Text("Settings"),
             onTap: () {
-              viewRoute((context) => TassySettings());
+              viewRoute((context) => TassySettings(), fromDrawer: true);
             },
           ),
           ListTile(
@@ -219,27 +239,93 @@ class _TassyMainState extends State<TassyMain> with TickerProviderStateMixin, Ms
   }
 
   List<Widget> _generateTabbedPages() {
+    _TassyAppState appState = _getAppState(context);
+
     return <Widget>[
       Container(
-        child: Text("Home"),
+        padding: EdgeInsets.fromLTRB(25, 35, 25, 25),
+        child: SingleChildScrollView(
+          child: Column(
+            spacing: 20,
+            children: <Widget>[
+              Text(
+                "Welcome to TASSY, the Task Assistant System!",
+                style: Theme.of(context).textTheme.headlineSmall,
+                textAlign: TextAlign.center,
+              ),
+              Text(
+                "Please choose an action below.",
+                textAlign: TextAlign.center,
+              ),
+              ElevatedButton.icon(
+                label: Text("New Task"),
+                onPressed: () {
+                  viewRoute((context) => TassyTaskEditor(EditorMode.add));
+                },
+              ),
+              ElevatedButton.icon(
+                label: Text("View Tasks"),
+                onPressed: () {
+                  viewTabbedPage(1);
+                },
+              ),
+              ElevatedButton.icon(
+                label: Text("View User Profile"),
+                onPressed: () {
+                  viewTabbedPage(2);
+                },
+              ),
+            ],
+          ),
+        ),
       ),
       Container(
-        child: Text("View Tasks"),
+        padding: EdgeInsets.fromLTRB(25, 25, 25, 25),
+        child: SingleChildScrollView(
+          child: Text("View Tasks"),
+        ),
       ),
       Container(
-        child: Text("User Profile"),
+        padding: EdgeInsets.fromLTRB(25, 25, 25, 25),
+        child: SingleChildScrollView(
+          child: Column(
+            spacing: 0,
+            children: <Widget>[
+              CircleAvatar(
+                radius: 75,
+              ),
+              Text(
+                appState.user.name,
+                style: Theme.of(context).textTheme.headlineSmall,
+              ),
+              Text(
+                "\"${appState.user.nickname}\"",
+                style: Theme.of(context).textTheme.headlineMedium,
+              ),
+              Text(
+                appState.user.position,
+              ),
+              Text(
+                appState.user.officeUnit,
+              ),
+              Text(
+                appState.user.company,
+              ),
+            ],
+          ),
+        ),
       ),
     ];
   }
 
-  void viewTabbedPage(int num) 
+  void viewTabbedPage(int num, {bool fromDrawer = false}) 
   {
-    Navigator.pop(context);
+    if (fromDrawer) Navigator.pop(context);
     _tabController!.index = num;
   }
 
-  void viewRoute(WidgetBuilder f) {
-    Navigator.pop(context);
+  void viewRoute(WidgetBuilder f, {bool fromDrawer = false}) {
+    if (fromDrawer) Navigator.pop(context);
     Navigator.push(context, MaterialPageRoute(builder: f));
   }
 
@@ -314,7 +400,7 @@ class _TassySettingsState extends State<TassySettings> with _AppStateMixin {
     return Scaffold(
       appBar: AppBar(title: Text("Settings")),
       body: SingleChildScrollView(
-        padding: EdgeInsets.all(20),
+        padding: EdgeInsets.all(25),
         child: Column(
           children: <Widget>[
             SwitchListTile(
@@ -460,6 +546,47 @@ class TassyReminder {
 
   String get snoozeUnitString {
     return _snoozeUnit.name.toString() + (snoozeDuration == 1 ? "" : "s");
+  }
+}
+
+class TassyUser {
+  String name = "New User";
+  String nickname = "";
+  String position = "";
+  String officeUnit = "";
+  String company = "";
+  late List<String> _phoneNumbers;
+  late List<String> _emailAddresses;
+
+  TassyUser({this.name = "New User", this.nickname = "", this.position = "", this.officeUnit = "", this.company = "", List<String>? phoneNumbers, List<String>? emailAddresses}) {
+    _phoneNumbers = [];
+    _emailAddresses = [];
+
+    if (phoneNumbers != null && phoneNumbers.isNotEmpty) {
+      for (String phoneNumber in phoneNumbers) {
+        addPhoneNumber(phoneNumber);
+      }
+    }
+
+    if (emailAddresses != null && emailAddresses.isNotEmpty) {
+      for (String phoneNumber in emailAddresses) {
+        addPhoneNumber(phoneNumber);
+      }
+    }
+  }
+
+  void addPhoneNumber(String phoneNumber) {
+    phoneNumber = phoneNumber.trim();
+    if (phoneNumber != "" && !_phoneNumbers.contains(phoneNumber)) {
+      _phoneNumbers.add(phoneNumber);
+    }
+  }
+
+  void addEmailAddress(String emailAddress) {
+    emailAddress = emailAddress.trim();
+    if (emailAddress != "" && !_emailAddresses.contains(emailAddress)) {
+      _emailAddresses.add(emailAddress);
+    }
   }
 }
 // #endregion
