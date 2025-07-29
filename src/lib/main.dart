@@ -9,6 +9,10 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:path/path.dart';
+import 'package:path_provider/path_provider.dart';
+import 'package:sqlite3/sqlite3.dart';
 import 'package:device_info_plus/device_info_plus.dart';
 import 'package:string_to_color/string_to_color.dart';
 import 'package:window_size/window_size.dart';
@@ -140,7 +144,7 @@ class _TassyAppState extends State<TassyApp> with _AppStateMixin {
 
   TassyUser retrieveUser() { // TEMPORARY DATA ONLY
     return TassyUser(
-      id: 0,
+      userId: 0,
       name: "Geovani Duqueza",
       nickname: "Geo",
       position: "Administrative Assistant III",
@@ -154,23 +158,23 @@ class _TassyAppState extends State<TassyApp> with _AppStateMixin {
   List<TassyTask> retrieveTasks() { // TEMPORARY DATA ONLY
     return <TassyTask>[
       TassyTask(
-        id: 0,
+        taskId: 0,
         "Work",
       ),
       TassyTask(
-        id: 1,
+        taskId: 1,
         "Go to the market",
         description: "Buy tomatoes, potatoes, and onions",
         schedule: DateTime(2025, 8, 1, 8),
       ),
       TassyTask(
-        id: 2,
+        taskId: 2,
         "School",
         description: "Submit project",
         schedule: DateTime(2025, 7, 30),
       ),
       TassyTask(
-        id: 3,
+        taskId: 3,
         "Meeting",
         description: "Office unit",
         schedule: DateTime(2025, 7, 31, 9),
@@ -430,7 +434,7 @@ class _TassyMainState extends State<TassyMain> with TickerProviderStateMixin, Ms
   
   void removeTask(TassyTask task, {bool currentViewIsMain = true, int index = 1}) {
     setState(() {
-      _getAppState(context).tasks.removeWhere((checkTask)=>(checkTask.id == task.id));
+      _getAppState(context).tasks.removeWhere((checkTask)=>(checkTask.taskId == task.taskId));
       if (currentViewIsMain) _lastPage = index;
     });
   }
@@ -531,6 +535,16 @@ class _TassyTaskEditorState extends State<TassyTaskEditor> {
             },
           ),
         ],
+      ),
+      body: ListView(
+        padding: EdgeInsets.all(25),
+      ),
+      floatingActionButton: FloatingActionButton(
+        tooltip: "Save",
+        child: Icon(Icons.save_rounded),
+        onPressed: () {
+
+        },
       ),
     );
   }
@@ -665,25 +679,34 @@ enum TimeUnit {
 }
 
 class TassyTask {
-  int id; // negative id for new tasks
-  String taskName;
-  String description;
+  int taskId; // negative id for new tasks
+  String taskName = "";
+  String description = "";
   DateTime? schedule;
-  double duration;
-  TimeUnit durationUnit;
+  double duration = 0;
+  TimeUnit durationUnit = TimeUnit.hour;
   List<TassyReminder> reminders = [];
   bool done = false;
 
-  TassyTask(this.taskName, {this.description = "", this.schedule, this.duration = 0, this.durationUnit = TimeUnit.hour, List<TassyReminder>? reminders, this.done = false, this.id = -1});
+  TassyTask(this.taskName, {this.description = "", this.schedule, this.duration = 0, this.durationUnit = TimeUnit.hour, List<TassyReminder>? reminders, this.done = false, this.taskId = -1 /*TEMP PARAM*/});
+
+  TassyTask.db({required this.taskId}) {
+    // retrieve from database
+  }
 }
 
 class TassyReminder {
+  int reminderId; // negative id for new reminders
   DateTime? alarm;
   double _snoozeDuration = 0; // zero means disabled snooze
   TimeUnit _snoozeUnit = TimeUnit.minute;
 
-  TassyReminder(this.alarm, {double snoozeDuration = 0, TimeUnit snoozeUnit = TimeUnit.minute}) {
+  TassyReminder(this.alarm, {double snoozeDuration = 0, TimeUnit snoozeUnit = TimeUnit.minute, this.reminderId = -1 /*TEMP PARAM*/}) {
     setSnooze(snoozeDuration, unit: snoozeUnit); 
+  }
+
+  TassyReminder.db({required this.reminderId}) {
+    // retrieve from database
   }
 
   void setSnooze(double duration, {TimeUnit unit = TimeUnit.minute}) {
@@ -717,7 +740,7 @@ class TassyReminder {
 }
 
 class TassyUser {
-  int id; // negative id for new user
+  int userId; // negative id for new user
   String name = "New User";
   String nickname = "";
   String position = "";
@@ -726,7 +749,7 @@ class TassyUser {
   late List<String> _phoneNumbers;
   late List<String> _emailAddresses;
 
-  TassyUser({this.name = "New User", this.nickname = "", this.position = "", this.officeUnit = "", this.company = "", List<String>? phoneNumbers, List<String>? emailAddresses, this.id = -1}) {
+  TassyUser({this.name = "New User", this.nickname = "", this.position = "", this.officeUnit = "", this.company = "", List<String>? phoneNumbers, List<String>? emailAddresses, this.userId = -1}) {
     _phoneNumbers = [];
     _emailAddresses = [];
 
@@ -756,5 +779,42 @@ class TassyUser {
       _emailAddresses.add(emailAddress);
     }
   }
+}
+// #endregion
+
+// #region Database
+class DBController {
+  Database? _db;
+  String filepath;
+
+  DBController() {
+    setupPath();
+  }
+
+  void setupPath() async { // adapted from https://stackoverflow.com/questions/78015865/location-to-place-sqlite-db-in-flutter
+    final directory = await getTemporaryDirectory();
+    final String path = join(directory.path, 'tassy.sqlite3');
+
+    final exists = await File(path).exists();
+
+    if (!exists) {
+      ByteData data = await rootBundle.load('assets/db/tassy.sqlite3');
+      List<int> bytes = data.buffer.asUint8List(data.offsetInBytes, data.lengthInBytes);
+      
+      await File(path).writeAsBytes(bytes, flush: true);
+    }
+
+    filepath = path;
+  }
+
+  get getDB async { // SHOULD DISPOSE/CLOSE CONNECTION AFTERWARDS!!!
+    _db = sqlite3.open(filepath);
+
+    return _db;
+  }
+
+  void close() {
+    _db!.dispose();
+  } 
 }
 // #endregion
