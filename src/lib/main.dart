@@ -10,10 +10,10 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
-// import 'package:shared_preferences/shared_preferences.dart';
 import 'package:path/path.dart' as pth;
 import 'package:path_provider/path_provider.dart';
 import 'package:sqlite3/sqlite3.dart' as sql;
+import 'package:sqlite3_flutter_libs/sqlite3_flutter_libs.dart';
 import 'package:device_info_plus/device_info_plus.dart';
 import 'package:string_to_color/string_to_color.dart';
 import 'package:window_size/window_size.dart';
@@ -47,11 +47,54 @@ class TassyMain extends StatefulWidget {
   State<TassyMain> createState() => _TassyMainState();
 }
 
-class TassySettings extends StatefulWidget {
-  const TassySettings({super.key});
-
+class TassySettings extends StatelessWidget with _AppStateMixin {
+  TassySettings({super.key});
+  
   @override
-  State<TassySettings> createState() => _TassySettingsState();
+  Widget build(BuildContext context) {
+    _TassyAppState appState = _getAppState(context);
+
+    return Scaffold(
+      appBar: AppBar(title: Text("Settings")),
+      body: SingleChildScrollView(
+        padding: EdgeInsets.all(25),
+        child: Column(
+          children: <Widget>[
+            SwitchListTile(
+              title: const Text("Dark Mode"),
+              value: appState.darkModeSwitchValue,
+              onChanged: (bool value) {
+                appState.darkModeSwitchValue = value;
+                appState.turnOnDarkTheme(value);
+                appState.themeNames = (appState.darkModeSwitchValue ? appState.darkThemes.keys : appState.themes.keys).toList();
+              },
+            ),
+            ListTile(
+              title: Text("Select theme:"),
+              tileColor: Theme.of(context).colorScheme.primary,
+              textColor: Theme.of(context).colorScheme.onPrimary,
+              trailing: DropdownButton<String>(
+                dropdownColor: Theme.of(context).colorScheme.primary,
+                value: appState.selectedThemeName,
+                items: appState.themeNames.map((themeName)=>DropdownMenuItem<String>(
+                  value: themeName,
+                  child: Text(
+                    themeName,
+                    style: TextStyle(color: Theme.of(context).colorScheme.onPrimary),
+                  ),
+                )).toList(),
+                onChanged: (String? value) {
+                  appState.selectedThemeName = value!;
+                  appState.selectTheme(value);
+                },
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+  
 }
 
 class TassyTaskEditor extends StatefulWidget {
@@ -64,17 +107,16 @@ class TassyTaskEditor extends StatefulWidget {
   State<TassyTaskEditor> createState() => _TassyTaskEditorState();
 }
 
-class TaskList extends StatelessWidget {
-  // ignore: library_private_types_in_public_api
-  final _TassyAppState appState;
-
-  // ignore: library_private_types_in_public_api
-  const TaskList(this.appState, {super.key});
+class TaskList extends StatelessWidget with _AppStateMixin {
+  const TaskList({super.key});
   
   @override
   Widget build(BuildContext context) {
-    return ListView(
-      children: appState.tasks.map((task)=>TaskTile(task, this)).toList(),
+    return ListView.separated(
+      itemBuilder: (BuildContext context, int index) => TaskTile(_getAppState(context).tasks[index], this),
+      separatorBuilder: (BuildContext context, int index) => const Divider(),
+      itemCount: _getAppState(context).tasks.length,
+      // children: _getAppState(context).tasks.map((task)=>TaskTile(task, this)).toList(),
     );
   }
 }
@@ -109,6 +151,8 @@ class _TassyAppState extends State<TassyApp> with _AppStateMixin, MsgBoxMixin {
   };
   List<TassyTask> tasks = [];
   bool dbRetrieved = false;
+  late List<String> themeNames;
+  bool darkModeSwitchValue = false;
 
   @override
   void initState() {
@@ -141,8 +185,6 @@ class _TassyAppState extends State<TassyApp> with _AppStateMixin, MsgBoxMixin {
   void databaseSynced() {
     setState(() {
       dbRetrieved = true;
-      // user = retrieveUser();
-      // tasks = retrieveTasks();
     });
   }
   
@@ -157,33 +199,42 @@ class _TassyAppState extends State<TassyApp> with _AppStateMixin, MsgBoxMixin {
         colorScheme: ColorScheme.fromSeed(seedColor: ColorUtils.stringToColor(seedColors[color] as String), brightness: Brightness.dark),
       );
     }
+    themeNames = (darkModeSwitchValue ? darkThemes.keys : themes.keys).toList();
+    darkModeSwitchValue = (themeMode == ThemeMode.dark);
   }
 
-  TassyUser retrieveUser() {
-    sql.ResultSet results = db.select("user", "*");
+  TassyUser? retrieveUser() {
+    TassyUser? user;
+    sql.ResultSet results;
     int userId = -1;
     String name = "", nickname = "", position = "", officeUnit = "", company = "";
-    TassyUser user;
 
-    if (results.isNotEmpty) {
-      userId = results[0]["userId"];
-      name = results[0]["name"];
-      nickname = results[0]["nickname"];
-      position = results[0]["position"];
-      officeUnit = results[0]["officeUnit"];
-      company = results[0]["company"];
+    try {
+      results = db.select("user", "*");
+
+      if (results.isNotEmpty) {
+        userId = results[0]["userId"];
+        name = results[0]["name"];
+        nickname = results[0]["nickname"];
+        position = results[0]["position"];
+        officeUnit = results[0]["officeUnit"];
+        company = results[0]["company"];
+      }
+
+      user = TassyUser(
+        userId: userId,
+        name: name,
+        nickname: nickname,
+        position: position,
+        officeUnit: officeUnit,
+        company: company,
+        phoneNumbers: ["09153032914", "09295015297"],
+        emailAddresses: ["geovani.duqueza@deped.gov.ph", "24-00901@g.batstate-u.edu.ph"],
+      );
     }
-
-    user = TassyUser(
-      userId: userId,
-      name: name,
-      nickname: nickname,
-      position: position,
-      officeUnit: officeUnit,
-      company: company,
-      phoneNumbers: ["09153032914", "09295015297"],
-      emailAddresses: ["geovani.duqueza@deped.gov.ph", "24-00901@g.batstate-u.edu.ph"],
-    );
+    catch (ex) {
+      debugPrint("$ex");
+    }
 
     return user;
   }
@@ -219,8 +270,8 @@ class _TassyAppState extends State<TassyApp> with _AppStateMixin, MsgBoxMixin {
         );
 
         db.select(
-          "reminders", "*",
-          criteriaStr: "WHERE reminders.taskId = ${task.taskId}"
+          "reminder", "*",
+          criteriaStr: "WHERE reminder.taskId = ${task.taskId}"
         ).map((reminder) {
           task.reminders.add(TassyReminder(
             DateTime.tryParse(reminder["alarm"]),
@@ -233,7 +284,7 @@ class _TassyAppState extends State<TassyApp> with _AppStateMixin, MsgBoxMixin {
         return task;
       }).toList();
     }
-    catch(ex) {
+    catch (ex) {
       debugPrint("$ex");
     }
     return tasks;
@@ -254,6 +305,7 @@ class _TassyAppState extends State<TassyApp> with _AppStateMixin, MsgBoxMixin {
   @override
   dispose() {
     super.dispose();
+    db.db!.dispose();
   }
 }
 
@@ -416,8 +468,8 @@ class _TassyMainState extends State<TassyMain> with TickerProviderStateMixin, Ms
         ),
       ),
       Container(
-        padding: EdgeInsets.fromLTRB(25, 25, 25, 25),
-        child: (appState.dbRetrieved ? TaskList(appState) 
+        padding: EdgeInsets.all(25),
+        child: (appState.dbRetrieved ? TaskList() 
         : 
           Center(
             child: CircularProgressIndicator.adaptive(),
@@ -425,7 +477,7 @@ class _TassyMainState extends State<TassyMain> with TickerProviderStateMixin, Ms
         ),
       ),
       Container(
-        padding: EdgeInsets.fromLTRB(25, 25, 25, 25),
+        padding: EdgeInsets.all(25),
         child: (appState.dbRetrieved
         ?
           SingleChildScrollView(
@@ -473,8 +525,6 @@ class _TassyMainState extends State<TassyMain> with TickerProviderStateMixin, Ms
   }
 
   List<FloatingActionButton?> _generateFABs() {
-    // _TassyAppState appState = _getAppState(context);
-
     return <FloatingActionButton?>[
       null,
       FloatingActionButton(
@@ -540,89 +590,10 @@ class _TassyMainState extends State<TassyMain> with TickerProviderStateMixin, Ms
       if (currentViewIsMain) _lastPage = index;
     });
   }
-  
-  FloatingActionButton _tempFAB() { // FOR TESTING ONLY
-    _TassyAppState appState = _getAppState(context);
-
-    return FloatingActionButton.extended(
-      label: Text("Theme: ${(appState).selectedThemeName}"),
-      onPressed: () {
-        Iterator<String> it = appState.seedColors.keys.iterator;
-        while (it.moveNext()) {
-          if (appState.selectedThemeName == it.current) {
-            setState(() {
-              appState.selectTheme(it.moveNext() ? it.current : appState.seedColors.keys.first);
-            });
-            break;
-          }
-        }
-      },
-    );
-  }
-}
-
-// THIS WIDGET OF THIS STATE MIGHT BE BETTER OFF AS A STATELESS WIDGET
-class _TassySettingsState extends State<TassySettings> with _AppStateMixin {
-  bool darkModeSwitchValue = false;
-  late _TassyAppState appState;
-  String selectedThemeName = "";
-  List<String> themeNames = [];
-
-  @override
-  void initState() {
-    super.initState();
-    appState = _getAppState(context);
-    darkModeSwitchValue = (appState.themeMode == ThemeMode.dark);
-    selectedThemeName = appState.selectedThemeName;
-    themeNames = (darkModeSwitchValue ? appState.darkThemes.keys : appState.themes.keys).toList();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(title: Text("Settings")),
-      body: SingleChildScrollView(
-        padding: EdgeInsets.all(25),
-        child: Column(
-          children: <Widget>[
-            SwitchListTile(
-              title: const Text("Dark Mode"),
-              value: darkModeSwitchValue,
-              onChanged: (bool value) {
-                darkModeSwitchValue = value;
-                appState.turnOnDarkTheme(value);
-                themeNames = (darkModeSwitchValue ? appState.darkThemes.keys : appState.themes.keys).toList();
-              },
-            ),
-            ListTile(
-              title: Text("Select theme:"),
-              tileColor: Theme.of(context).colorScheme.primary,
-              textColor: Theme.of(context).colorScheme.onPrimary,
-              trailing: DropdownButton<String>(
-                dropdownColor: Theme.of(context).colorScheme.primary,
-                value: selectedThemeName,
-                items: themeNames.map((themeName)=>DropdownMenuItem<String>(
-                  value: themeName,
-                  child: Text(
-                    themeName,
-                    style: TextStyle(color: Theme.of(context).colorScheme.onPrimary),
-                  ),
-                )).toList(),
-                onChanged: (String? value) {
-                  selectedThemeName = value!;
-                  appState.selectTheme(selectedThemeName);
-                },
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
 }
 
 class _TassyTaskEditorState extends State<TassyTaskEditor> {
-
+ 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -735,8 +706,8 @@ class _TaskTileState extends State<TaskTile> with _AppStateMixin, _MainStateMixi
           _dialogYesNo(
             context,
             "Delete this task?",
-            () { _getMainState(context).removeTask(widget.task); Navigator.of(context).pop(); }, 
-            () { Navigator.of(context).pop(); }, 
+            () { _getMainState(context).removeTask(widget.task); Navigator.of(context).pop(); },
+            () { Navigator.of(context).pop(); },
             title: _getAppState(context).widget.title,
           );
         },
@@ -871,7 +842,7 @@ class TassyReminder {
   }
 
   String get snoozeUnitString {
-    return _snoozeUnit.name.toString() + (snoozeDuration == 1 ? "" : "s");
+    return snoozeUnit.name.toString() + (snoozeDuration == 1 ? "" : "s");
   }
 }
 
@@ -932,42 +903,31 @@ class DBController {
     test();
   }
 
-  Future<bool> setupPath() async { // adapted from https://stackoverflow.com/questions/78015865/location-to-place-sqlite-db-in-flutter
-    final manager = DirectoryManager();
+  Future<bool> setupPath() async {
     String path = "";
 
-    // manager.directoryStream.listen(
-    //   (directory) async {
-        try {
-          final Directory directory = await getTemporaryDirectory();
-          String path = pth.join(directory.path, 'tassy.sqlite3');
+    try {
+      final Directory directory = (Platform.isIOS ? await getLibraryDirectory() : await getApplicationDocumentsDirectory());
+      String path = pth.join(directory.path, 'tassy.sqlite3');
 
-          final exists = await File(path).exists();
+      final exists = await File(path).exists();
 
-          if (!exists) {
-            ByteData data = await rootBundle.load('assets/db/tassy.sqlite3');
-            List<int> bytes = data.buffer.asUint8List(data.offsetInBytes, data.lengthInBytes);
-            
-            await File(path).writeAsBytes(bytes, flush: true);
-          }
+      if (!exists) {
+        ByteData data = await rootBundle.load('assets/db/tassy.sqlite3');
+        List<int> bytes = data.buffer.asUint8List(data.offsetInBytes, data.lengthInBytes);
+        
+        await File(path).writeAsBytes(bytes, flush: true);
+      }
 
-          filepath = path;
+      filepath = path;
+      debugPrint("DB path initialized: $filepath");
 
-          appState.databaseSynced();
-        }
-        catch(ex) {
-          debugPrint("$ex");
-          filepath = path;
-        }
-    //   },
-    //   onError: (error) {
-    //     path = "";
-    //   },
-    // );
-
-    // await manager.fetchTemporaryDirectory();
-
-    // manager.dispose();
+      appState.databaseSynced();
+    }
+    catch (ex) {
+      debugPrint("$ex");
+      filepath = path;
+    }
 
     return (filepath != "");
   }
@@ -977,29 +937,33 @@ class DBController {
   }
 
   bool test() {
+    bool ok = true;
     try {
       open();
     }
-    catch(ex) {
+    catch (ex) {
       debugPrint("$ex");
+      ok = false;
+    }
+    finally {
       close();
-      return false;
     }
 
-    close();
-
-    return true;
+    return ok;
   }
 
   void open() { // SHOULD DISPOSE/CLOSE CONNECTION AFTERWARDS!!! AVOID USING DIRECTLY
-    try {
-      if (filepath == "") throw "Uninitialized DB path.";
+    if (filepath == "") throw "Uninitialized DB path.";
 
+    try {
       _db = sql.sqlite3.open(filepath);
     }
-    catch(ex) {
+    catch (ex) {
       debugPrint("$ex");
-      _db = null;
+      if (db != null) {
+        _db!.dispose();
+        _db = null;
+      }
     }
   }
 
@@ -1012,17 +976,18 @@ class DBController {
   sql.ResultSet select(String table, String fieldStr, {String criteriaStr = ""}) {
     sql.ResultSet results;
 
-    open();
-
     try {
+      open();
+
       results = _db!.select("SELECT $fieldStr FROM $table${criteriaStr == "" ? ";" : " $criteriaStr;"}");
     }
-    catch(ex) {
+    catch (ex) {
       debugPrint("$ex");
-      return sql.ResultSet([], [], []);
+      results = sql.ResultSet([], [], []);
     }
-
-    close();
+    finally {
+      close();
+    }
 
     return results;
   }
@@ -1035,17 +1000,25 @@ class DBController {
   /// 
   /// RETURNS: lastInsertRowId or -1
   int insert(String table, String fieldStr, List<List<Object?>> valueSetArr) {
-    open();
-    
-    final sql.PreparedStatement stmt = _db!.prepare("INSERT INTO $table ($fieldStr) VALUES (${fieldStr.split(",").map((str)=>"?").reduce((a, b)=>"$a, $b")})");
-    
-    for (var valueSet in valueSetArr) {
-      stmt.execute(valueSet);
+    final sql.PreparedStatement stmt;
+
+    try {
+      open();
+      
+      stmt = _db!.prepare("INSERT INTO $table ($fieldStr) VALUES (${fieldStr.split(",").map((str)=>"?").reduce((a, b)=>"$a, $b")})");
+      
+      for (var valueSet in valueSetArr) {
+        stmt.execute(valueSet);
+      }
+
+      stmt.dispose();
     }
-
-    stmt.dispose();
-
-    close();
+    catch (ex) {
+      debugPrint("$ex");
+    }
+    finally {
+      close();
+    }
 
     return (_db!.updatedRows == 0 ? -1 : _db!.lastInsertRowId);
   }
@@ -1057,11 +1030,17 @@ class DBController {
   ///
   /// RETURNS: number of rows updated
   int update(String table, String fieldValueStr, {String criteriaStr = ""}) {
-    open();
+    try {
+      open();
 
-    _db!.execute("UPDATE $table SET $fieldValueStr ${criteriaStr == "" ? ";" : " $criteriaStr;"}");
-
-    close();
+      _db!.execute("UPDATE $table SET $fieldValueStr ${criteriaStr == "" ? ";" : " $criteriaStr;"}");
+    }
+    catch (ex) {
+      debugPrint("$ex");
+    }
+    finally {
+      close();
+    }
 
     return _db!.updatedRows;
   }
@@ -1072,45 +1051,33 @@ class DBController {
   /// 
   /// RETURNS: number of rows updated
   int delete(String table, {String criteriaStr = ""}) {
-    open();
+    try {
+      open();
 
-    _db!.execute("DELETE FROM $table ${criteriaStr == "" ? ";" : " $criteriaStr;"}");
-
-    close();
+      _db!.execute("DELETE FROM $table ${criteriaStr == "" ? ";" : " $criteriaStr;"}");
+    }
+    catch (ex) {
+      debugPrint("$ex");
+    }
+    finally {
+      close();
+    }
 
     return _db!.updatedRows;
   }
 
   void close() { // ALWAYS USE THIS TO CLOSE CONNECTION
     if (_db != null) {
-      _db!.dispose();
-
-      _db = null;
+      try {
+        _db!.dispose();
+      }
+      catch (ex) {
+        debugPrint("$ex");
+      }
+      finally {
+        _db = null;
+      }
     }
-  }
-}
-
-class DirectoryManager {
-  final StreamController<Directory> _directoryStreamController = StreamController<Directory>();
-
-  Stream<Directory> get directoryStream => _directoryStreamController.stream;
-
-  // Method to fetch the temporary directory
-  Future<void> fetchTemporaryDirectory() async {
-    try {
-      Directory tempDir = await getApplicationDocumentsDirectory();
-      // Directory tempDir = await getTemporaryDirectory();
-      // Emit the directory path to listeners
-      _directoryStreamController.add(tempDir);
-    } catch (e) {
-      // Emit an error if something goes wrong
-      _directoryStreamController.addError('Failed to get application directory: $e');
-    }
-  }
-
-  // Dispose the StreamController when done
-  void dispose() {
-    _directoryStreamController.close();
   }
 }
 // #endregion
