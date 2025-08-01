@@ -4,20 +4,22 @@
 // Author:        Geovani P. Duqueza
 //==============================================================
 
-import 'dart:math';
 import 'dart:core';
-import 'dart:async';
+import 'dart:io';
+import 'dart:math';
+// import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
 import 'package:path/path.dart' as pth;
 import 'package:path_provider/path_provider.dart';
 import 'package:sqlite3/sqlite3.dart' as sql;
+// ignore: unused_import
 import 'package:sqlite3_flutter_libs/sqlite3_flutter_libs.dart';
 import 'package:device_info_plus/device_info_plus.dart';
 import 'package:string_to_color/string_to_color.dart';
 import 'package:window_size/window_size.dart';
-import 'dart:io';
+import 'package:flutter_datetime_picker_plus/flutter_datetime_picker_plus.dart' as dt;
 
 void main() {
   final String appTitle = "TASSY: The Task Assistant System";
@@ -57,7 +59,7 @@ class TassySettings extends StatelessWidget with _AppStateMixin {
     return Scaffold(
       appBar: AppBar(title: Text("Settings")),
       body: SingleChildScrollView(
-        padding: EdgeInsets.all(25),
+        padding: const EdgeInsets.all(25),
         child: Column(
           children: <Widget>[
             SwitchListTile(
@@ -431,7 +433,7 @@ class _TassyMainState extends State<TassyMain> with TickerProviderStateMixin, Ms
 
     return <Widget>[
       Container(
-        padding: EdgeInsets.fromLTRB(25, 35, 25, 25),
+        padding: const EdgeInsets.fromLTRB(25, 35, 25, 25),
         child: SingleChildScrollView(
           child: Column(
             spacing: 20,
@@ -468,7 +470,7 @@ class _TassyMainState extends State<TassyMain> with TickerProviderStateMixin, Ms
         ),
       ),
       Container(
-        padding: EdgeInsets.all(25),
+        padding: const EdgeInsets.all(25),
         child: (appState.dbRetrieved ? TaskList() 
         : 
           Center(
@@ -477,7 +479,7 @@ class _TassyMainState extends State<TassyMain> with TickerProviderStateMixin, Ms
         ),
       ),
       Container(
-        padding: EdgeInsets.all(25),
+        padding: const EdgeInsets.all(25),
         child: (appState.dbRetrieved
         ?
           SingleChildScrollView(
@@ -514,7 +516,7 @@ class _TassyMainState extends State<TassyMain> with TickerProviderStateMixin, Ms
           )
         :
           Container(
-            padding: EdgeInsets.all(10),
+            padding: const EdgeInsets.all(10),
             child: Center(
               child: CircularProgressIndicator.adaptive(),
             )
@@ -593,9 +595,24 @@ class _TassyMainState extends State<TassyMain> with TickerProviderStateMixin, Ms
 }
 
 class _TassyTaskEditorState extends State<TassyTaskEditor> {
+  final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+  DateTime? schedule = DateTime.now();
+  String? taskName;
+  String? description;
+  late TextEditingController scheduleTextController;
+  
+  @override
+  initState() {
+    super.initState();
+
+    scheduleTextController = TextEditingController.fromValue(
+      TextEditingValue(text: (schedule ?? "").toString()),
+    );
+  }
  
   @override
   Widget build(BuildContext context) {
+
     return Scaffold(
       appBar: AppBar(
         title: Text("${widget.mode == EditorMode.add ? "New" : "Edit"} Task"),
@@ -609,18 +626,98 @@ class _TassyTaskEditorState extends State<TassyTaskEditor> {
           ),
         ],
       ),
-      body: ListView(
-        padding: EdgeInsets.all(25),
+      body: Form(
+        key: _formKey,
+        child: ListView(
+          padding: const EdgeInsets.all(25),
+          children: <Widget>[
+            TextFormField(
+              decoration: const InputDecoration(labelText: "Task Name"),
+              onChanged: (String? value) {
+                _formKey.currentState?.validate();
+              },
+              validator: (String? value) {
+                if (value == null || value.isEmpty) {
+                  return "Text field is required!";
+                }
+                return null;
+              },
+            ),
+            TextFormField(
+              decoration: const InputDecoration(labelText: "Description"),
+            ),
+            TextFormField(
+              decoration: const InputDecoration(labelText: "Date/Time"),
+              controller: scheduleTextController,
+              onTap: () {
+                dt.DatePicker.showDateTimePicker(context,
+                  showTitleActions: true,
+                  currentTime: DateTime.now(),
+                  minTime: DateTime(2000, 1, 1),
+                  maxTime: DateTime(2100, 12, 31, 23, 59),
+                  /* pickerModel: dt.DateTimePickerModel(
+                    locale: dt.LocaleType.en,
+                  ), */
+                  onChanged: (date) {
+                    // setState(() {
+                    //   scheduleTextController.value = TextEditingValue(text: date.toString());
+                    //   description = date.toString();
+                    // });
+                  },
+                  onConfirm: (date) {
+                    setState(() {
+                      scheduleTextController.value = TextEditingValue(text: date.toString());
+                      description = date.toString();
+                    });
+                  },
+                  locale: dt.LocaleType.en,
+                );
+              },
+            ),
+            ListTile(
+              // leading: Text("Duration", style: TextStyle(inherit: true)),
+              title: TextFormField(
+                decoration: const InputDecoration(labelText: "Duration"),
+                onChanged: (String? value) {
+                  _formKey.currentState?.validate();
+                },
+                validator: (String? value) {
+                  if (num.tryParse(value!) == null) {
+                    return "Numeric value required!";
+                  }
+                  return null;
+                },
+              ),
+              trailing: DropdownButton<String>(
+                value: TimeUnit.hour.name,
+                items: TimeUnit.values.map((u)=>DropdownMenuItem<String>(
+                  value: u.name,
+                  child: Text(u.name),
+                )).toList(),
+                onChanged: (String? value) {
+
+                },
+              ),
+            ),
+          ],
+        ),
       ),
       floatingActionButton: FloatingActionButton(
         tooltip: "Save",
         child: Icon(Icons.save_rounded),
-        onPressed: () {
-
-        },
+        onPressed: () => _submit(),
       ),
     );
   }
+
+  void _submit() {
+    final isValid = (_formKey.currentState?.validate() ?? false);
+    if (!isValid) {
+      return;
+    }
+    _formKey.currentState?.save();
+  }
+
 }
 
 class _TaskTileState extends State<TaskTile> with _AppStateMixin, _MainStateMixin, MsgBoxMixin {
