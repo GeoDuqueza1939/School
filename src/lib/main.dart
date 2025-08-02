@@ -4,10 +4,7 @@
 // Author:        Geovani P. Duqueza
 //==============================================================
 
-import 'dart:core';
 import 'dart:io';
-import 'dart:math';
-// import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
@@ -22,21 +19,22 @@ import 'package:window_size/window_size.dart';
 import 'package:flutter_datetime_picker_plus/flutter_datetime_picker_plus.dart' as dt;
 
 void main() {
-  final String appTitle = "TASSY: The Task Assistant System";
-  final String title = "TASSY";
-
-  WidgetsFlutterBinding.ensureInitialized();
-  setWindowTitle(appTitle);
-
-  runApp(TassyApp(title: title, appTitle: appTitle));
+  final GlobalKey<_TassyAppState> appKey = GlobalKey<_TassyAppState>();
+  
+  runApp(TassyApp(key: appKey));
 }
 
 // #region Widgets
 class TassyApp extends StatefulWidget {
-  final String title;
-  final String appTitle;
+  final String title = "TASSY";
+  final String appTitle = "TASSY: The Task Assistant System";
+  static final DateFormat df = DateFormat("M/d/yyyy h:mm a");
+  static String selectedThemeName = "SKY";
+  static ThemeMode themeMode = ThemeMode.light;
+  static final List<String> themeNames = [];
+  static Map<String, ThemeData> themes = {}, darkThemes = {};
 
-  const TassyApp({super.key, required this.title, required this.appTitle});
+  const TassyApp({super.key});
 
   @override
   State<TassyApp> createState() => _TassyAppState();
@@ -68,7 +66,8 @@ class TassySettings extends StatelessWidget with _AppStateMixin {
               onChanged: (bool value) {
                 appState.darkModeSwitchValue = value;
                 appState.turnOnDarkTheme(value);
-                appState.themeNames = (appState.darkModeSwitchValue ? appState.darkThemes.keys : appState.themes.keys).toList();
+                TassyApp.themeNames.clear();
+                TassyApp.themeNames.addAll((appState.darkModeSwitchValue ? TassyApp.darkThemes.keys : TassyApp.themes.keys));
               },
             ),
             ListTile(
@@ -77,8 +76,8 @@ class TassySettings extends StatelessWidget with _AppStateMixin {
               textColor: Theme.of(context).colorScheme.onPrimary,
               trailing: DropdownButton<String>(
                 dropdownColor: Theme.of(context).colorScheme.primary,
-                value: appState.selectedThemeName,
-                items: appState.themeNames.map((themeName)=>DropdownMenuItem<String>(
+                value: TassyApp.selectedThemeName,
+                items: TassyApp.themeNames.map((themeName)=>DropdownMenuItem<String>(
                   value: themeName,
                   child: Text(
                     themeName,
@@ -86,7 +85,7 @@ class TassySettings extends StatelessWidget with _AppStateMixin {
                   ),
                 )).toList(),
                 onChanged: (String? value) {
-                  appState.selectedThemeName = value!;
+                  TassyApp.selectedThemeName = value!;
                   appState.selectTheme(value);
                 },
               ),
@@ -134,33 +133,19 @@ class TaskTile extends StatefulWidget {
 // #endregion
 
 // #region States
-class _TassyAppState extends State<TassyApp> with _AppStateMixin, MsgBoxMixin {
+class _TassyAppState extends State<TassyApp> with MsgBoxMixin {
   late DBController db;
-  // ignore: avoid_init_to_null
-  TassyUser? user = null;
-  Map<String, ThemeData> themes = {}, darkThemes = {};
-  ThemeMode themeMode = ThemeMode.light;
-  String selectedThemeName = "SKY";
-  Map<String, String> seedColors = {
-    "MEADOW": "silver",
-    "SKY": "bluegreen",
-    "BROWN": "red[400]",
-    "PURPLE": "black",
-    "MOSS": "green",
-    "TEAL": "blueAccent",
-    "WARM": "orange",
-  };
-  List<TassyTask> tasks = [];
   bool dbRetrieved = false;
-  late List<String> themeNames;
+  TassyUser? user;
+  List<TassyTask> tasks = [];
   bool darkModeSwitchValue = false;
-  final DateFormat df = DateFormat("M/d/yyyy h:mm a");
 
   @override
   void initState() {
     super.initState();
+    setWindowTitle(widget.appTitle);
 
-    retrieveDatabase();
+    db = DBController(this);
   }
 
   @override
@@ -174,14 +159,10 @@ class _TassyAppState extends State<TassyApp> with _AppStateMixin, MsgBoxMixin {
     return MaterialApp(
       title: widget.appTitle,
       home: const TassyMain(),
-      theme: themes[(selectedThemeName == "dark" ? "bright" : selectedThemeName)],
-      darkTheme: darkThemes[(selectedThemeName == "bright" ? "dark" : selectedThemeName)],
-      themeMode: themeMode,
+      theme: TassyApp.themes[(TassyApp.selectedThemeName == "dark" ? "bright" : TassyApp.selectedThemeName)],
+      darkTheme: TassyApp.darkThemes[(TassyApp.selectedThemeName == "bright" ? "dark" : TassyApp.selectedThemeName)],
+      themeMode: TassyApp.themeMode,
     );
-  }
-
-  void retrieveDatabase() {
-    db = DBController(this);
   }
 
   void databaseSynced() {
@@ -191,18 +172,28 @@ class _TassyAppState extends State<TassyApp> with _AppStateMixin, MsgBoxMixin {
   }
   
   void retrieveThemes() { // autogenerate themes according to the provided color seeds; other custom themes may be added after the loop
+    Map<String, String> seedColors = {
+      "MEADOW": "silver",
+      "SKY": "bluegreen",
+      "BROWN": "red[400]",
+      "PURPLE": "black",
+      "MOSS": "green",
+      "TEAL": "blueAccent",
+      "WARM": "orange",
+    };
     List<String> colors = seedColors.keys.toList();
 
     for (String color in colors) {
-      themes[color] = ThemeData(
+      TassyApp.themes[color] = ThemeData(
         colorScheme: ColorScheme.fromSeed(seedColor: ColorUtils.stringToColor(seedColors[color] as String), brightness: Brightness.light),
       );
-      darkThemes[color] = ThemeData(
+      TassyApp.darkThemes[color] = ThemeData(
         colorScheme: ColorScheme.fromSeed(seedColor: ColorUtils.stringToColor(seedColors[color] as String), brightness: Brightness.dark),
       );
     }
-    themeNames = (darkModeSwitchValue ? darkThemes.keys : themes.keys).toList();
-    darkModeSwitchValue = (themeMode == ThemeMode.dark);
+    TassyApp.themeNames.clear();
+    TassyApp.themeNames.addAll((darkModeSwitchValue ? TassyApp.darkThemes.keys : TassyApp.themes.keys));
+    darkModeSwitchValue = (TassyApp.themeMode == ThemeMode.dark);
   }
 
   TassyUser? retrieveUser() {
@@ -259,16 +250,7 @@ class _TassyAppState extends State<TassyApp> with _AppStateMixin, MsgBoxMixin {
     sql.ResultSet results;
     List<TassyTask> tasks = <TassyTask>[];
 
-    TimeUnit getTimeUnit(int i)=>(i == 9 ? TimeUnit.millenium
-    : (i == 8 ? TimeUnit.century
-      : (i == 7 ? TimeUnit.decade
-        : (i == 6 ? TimeUnit.year
-          : (i == 5 ? TimeUnit.month
-            : (i == 4 ? TimeUnit.week
-              : (i == 3 ? TimeUnit.day
-                : (i == 1 ? TimeUnit.minute
-                  : (i == 0 ? TimeUnit.second
-                    : TimeUnit.hour)))))))));
+    TimeUnit getTimeUnit(int i)=>TimeUnit.values[i < TimeUnit.values.length || i >= 0 ? i : 2];
 
     try {
       results = db.select("task", "*");
@@ -310,13 +292,13 @@ class _TassyAppState extends State<TassyApp> with _AppStateMixin, MsgBoxMixin {
 
   void selectTheme(String themeName) {
     setState(() {
-      selectedThemeName = themeName;
+      TassyApp.selectedThemeName = themeName;
     });
   }
 
   void turnOnDarkTheme(bool value) {
     setState(() {
-      themeMode = (value ? ThemeMode.dark : ThemeMode.light);
+      TassyApp.themeMode = (value ? ThemeMode.dark : ThemeMode.light);
     });
   }
 
@@ -328,6 +310,7 @@ class _TassyAppState extends State<TassyApp> with _AppStateMixin, MsgBoxMixin {
 }
 
 class _TassyMainState extends State<TassyMain> with TickerProviderStateMixin, MsgBoxMixin, _AppStateMixin, _MainStateMixin {
+  final GlobalKey<FormState> userFormKey = GlobalKey<FormState>();
   late List<Widget> _tabbedPages = [];
   late List<Tab> _tabs = [];
   late List<FloatingActionButton?> _fabs = [];
@@ -338,7 +321,6 @@ class _TassyMainState extends State<TassyMain> with TickerProviderStateMixin, Ms
     child: CircularProgressIndicator.adaptive(),
   );
   bool userEditMode = false;
-  final GlobalKey<FormState> userFormKey = GlobalKey<FormState>();
 
   @override
   void initState() {
@@ -352,7 +334,7 @@ class _TassyMainState extends State<TassyMain> with TickerProviderStateMixin, Ms
     _tabbedPages = _generateTabbedPages();
     _tabController = TabController(
       initialIndex: _lastPage,
-      length: min(_tabs.length, _tabbedPages.length),
+      length: (_tabs.length < _tabbedPages.length ? _tabs.length : _tabbedPages.length),
       vsync: this,
     );
     _tabController!.addListener(() {
@@ -384,60 +366,38 @@ class _TassyMainState extends State<TassyMain> with TickerProviderStateMixin, Ms
   }
 
   Widget _generateDrawer(BuildContext context) {
+    List<Widget> drawerChildren = <Widget>[
+      DrawerHeader(
+        decoration: BoxDecoration(
+          color: Theme.of(context).colorScheme.primary
+        ),
+        child: Center(
+          child: Text("TASSY Menu"),
+        ),
+      ),
+    ];
+    drawerChildren.addAll(
+      [
+        ["Home", Icons.home_rounded, () {viewTabbedPage(0, fromDrawer: true);}],
+        ["New Task", Icons.add_task_rounded, () {
+          _tabController!.index = 1;
+          viewRoute((context) => TassyTaskEditor(TassyTask("", taskId: -1, db: getAppState(context).db), mainState: this,), fromDrawer: true);
+        }],
+        ["View Tasks", Icons.task_rounded, () {viewTabbedPage(1, fromDrawer: true);}],
+        ["User Profile", Icons.account_circle, () {viewTabbedPage(2, fromDrawer: true);}],
+        ["Settings", Icons.settings_rounded, () {viewRoute((context) => TassySettings(), fromDrawer: true);}],
+        ["Exit", Icons.exit_to_app_rounded, exitApp],
+      ].map((record)=>ListTile(
+        leading: Icon(record[1] as IconData),
+        title: Text(record[0] as String),
+        onTap: record[2] as Function(),
+      )).toList()
+    );
+
     return Drawer(
       child: ListView(
         padding: EdgeInsets.zero,
-        children: <Widget>[
-          DrawerHeader(
-            decoration: BoxDecoration(
-              color: Theme.of(context).colorScheme.primary
-            ),
-            child: Center(
-              child: Text("TASSY Menu"),
-            ),
-          ),
-          ListTile(
-            leading: Icon(Icons.home_rounded),
-            title: Text("Home"),
-            onTap: () {
-              viewTabbedPage(0, fromDrawer: true);
-            },
-          ),
-          ListTile(
-            leading: Icon(Icons.add_task_rounded),
-            title: Text("New Task"),
-            onTap: () {
-              _tabController!.index = 1;
-              viewRoute((context) => TassyTaskEditor(TassyTask("", taskId: -1, db: getAppState(context).db), mainState: this,), fromDrawer: true);
-            },
-          ),
-          ListTile(
-            leading: Icon(Icons.task_rounded),
-            title: Text("View Tasks"),
-            onTap: () {
-              viewTabbedPage(1, fromDrawer: true);
-            },
-          ),
-          ListTile(
-            leading: Icon(Icons.account_circle),
-            title: Text("User Profile"),
-            onTap: () {
-              viewTabbedPage(2, fromDrawer: true);
-            },
-          ),
-          ListTile(
-            leading: Icon(Icons.settings_rounded),
-            title: Text("Settings"),
-            onTap: () {
-              viewRoute((context) => TassySettings(), fromDrawer: true);
-            },
-          ),
-          ListTile(
-            leading: Icon(Icons.exit_to_app_rounded),
-            title: Text("Exit"),
-            onTap: exitApp,
-          ),
-        ],
+        children: drawerChildren,
       ),
     );
   }
@@ -691,7 +651,7 @@ class _TassyTaskEditorState extends State<TassyTaskEditor> with _AppStateMixin, 
     tempTask = TassyTask.copy(widget.task); // create a duplicate of the task to hold temporary values
 
     scheduleTextController = TextEditingController.fromValue(
-      TextEditingValue(text: (tempTask.schedule == null ? "" : getAppState(context).df.format(tempTask.schedule!))),
+      TextEditingValue(text: (tempTask.schedule == null ? "" : TassyApp.df.format(tempTask.schedule!))),
     );
   }
  
@@ -744,10 +704,10 @@ class _TassyTaskEditorState extends State<TassyTaskEditor> with _AppStateMixin, 
               onSaved: (String? value) {
                 setState(() {
                   scheduleTextController.value = TextEditingValue(text: value!);
-                  tempTask.schedule = getAppState(context).df.tryParse(value);
+                  tempTask.schedule = TassyApp.df.tryParse(value);
                 });
               },
-              validator: (value) => (value!.trim() != "" && getAppState(context).df.tryParse(value) == null ? "Invalid date" : null),
+              validator: (value) => (value!.trim() != "" && TassyApp.df.tryParse(value) == null ? "Invalid date" : null),
               onTap: () {
                 dt.DatePicker.showDateTimePicker(context,
                   showTitleActions: true,
@@ -756,7 +716,7 @@ class _TassyTaskEditorState extends State<TassyTaskEditor> with _AppStateMixin, 
                   maxTime: DateTime(2100, 12, 31, 23, 59),
                   onConfirm: (date) {
                     setState(() {
-                      scheduleTextController.value = TextEditingValue(text: getAppState(context).df.format(date));
+                      scheduleTextController.value = TextEditingValue(text: TassyApp.df.format(date));
                       tempTask.schedule = date;
                     });
                   },
