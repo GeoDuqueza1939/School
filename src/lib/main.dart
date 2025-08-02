@@ -54,7 +54,7 @@ class TassySettings extends StatelessWidget with _AppStateMixin {
   
   @override
   Widget build(BuildContext context) {
-    _TassyAppState appState = _getAppState(context);
+    _TassyAppState appState = getAppState(context);
 
     return Scaffold(
       appBar: AppBar(title: Text("Settings")),
@@ -100,27 +100,26 @@ class TassySettings extends StatelessWidget with _AppStateMixin {
 }
 
 class TassyTaskEditor extends StatefulWidget {
-  final EditorMode mode;
   final TassyTask task;
-
-  const TassyTaskEditor(this.mode, {super.key, required this.task});
+  // ignore: prefer_typing_uninitialized_variables
+  final taskTileState;
+  // ignore: prefer_typing_uninitialized_variables
+  final mainState;
+ 
+  const TassyTaskEditor(this.task, {super.key, this.taskTileState, this.mainState});
 
   @override
   State<TassyTaskEditor> createState() => _TassyTaskEditorState();
 }
 
-class TaskList extends StatelessWidget with _AppStateMixin {
-  const TaskList({super.key});
+class TaskList extends StatefulWidget {
+  // ignore: prefer_typing_uninitialized_variables
+  final mainState;
+
+  const TaskList({super.key, required this.mainState});
   
   @override
-  Widget build(BuildContext context) {
-    return ListView.separated(
-      itemBuilder: (BuildContext context, int index) => TaskTile(_getAppState(context).tasks[index], this),
-      separatorBuilder: (BuildContext context, int index) => const Divider(),
-      itemCount: _getAppState(context).tasks.length,
-      // children: _getAppState(context).tasks.map((task)=>TaskTile(task, this)).toList(),
-    );
-  }
+  State<TaskList> createState() => _TaskListState();
 }
 
 class TaskTile extends StatefulWidget {
@@ -155,6 +154,7 @@ class _TassyAppState extends State<TassyApp> with _AppStateMixin, MsgBoxMixin {
   bool dbRetrieved = false;
   late List<String> themeNames;
   bool darkModeSwitchValue = false;
+  final DateFormat df = DateFormat("M/d/yyyy h:mm a");
 
   @override
   void initState() {
@@ -241,6 +241,20 @@ class _TassyAppState extends State<TassyApp> with _AppStateMixin, MsgBoxMixin {
     return user;
   }
 
+  void saveUser() {
+    db.update("user", "name = '${user!.name}', nickname = '${user!.nickname}', position = '${user!.position}', officeUnit = '${user!.officeUnit}', company = '${user!.company}'", criteriaStr: "WHERE userId = ${user!.userId}");
+    db.delete("phoneNumber", criteriaStr: "WHERE userId = ${user!.userId}");
+    db.delete("emailAddress", criteriaStr: "WHERE userId = ${user!.userId}");
+
+    for (String phoneNumber in user!.phoneNumbers) {
+      db.insert("phoneNumber", "phoneNumber, userId", [[phoneNumber, user!.userId]]);
+    }
+
+    for (String emailAddress in user!.emailAddresses) {
+      db.insert("emailAddress", "emailAddress, userId", [[emailAddress, user!.userId]]);
+    }
+  }
+
   List<TassyTask> retrieveTasks() { // TEMPORARY DATA ONLY
     sql.ResultSet results;
     List<TassyTask> tasks = <TassyTask>[];
@@ -269,6 +283,7 @@ class _TassyAppState extends State<TassyApp> with _AppStateMixin, MsgBoxMixin {
           durationUnit: getTimeUnit(int.tryParse(result["durationUnit"].toString()) ?? 2),
           reminders: [],
           done: (result["done"] != 0),
+          db: db,
         );
 
         db.select(
@@ -280,6 +295,7 @@ class _TassyAppState extends State<TassyApp> with _AppStateMixin, MsgBoxMixin {
             reminderId: reminder["reminderId"],
             snoozeDuration: double.tryParse(reminder["snoozeDuration"].toString()) ?? 0,
             snoozeUnit: getTimeUnit(int.tryParse(reminder["snoozeUnit"]) ?? 2),
+            db: db,
           ));
         });
 
@@ -311,13 +327,18 @@ class _TassyAppState extends State<TassyApp> with _AppStateMixin, MsgBoxMixin {
   }
 }
 
-class _TassyMainState extends State<TassyMain> with TickerProviderStateMixin, MsgBoxMixin, _AppStateMixin {
+class _TassyMainState extends State<TassyMain> with TickerProviderStateMixin, MsgBoxMixin, _AppStateMixin, _MainStateMixin {
   late List<Widget> _tabbedPages = [];
   late List<Tab> _tabs = [];
   late List<FloatingActionButton?> _fabs = [];
   FloatingActionButton? _fab;
   TabController? _tabController;
   int _lastPage = 0;
+  Widget taskList = Center(
+    child: CircularProgressIndicator.adaptive(),
+  );
+  bool userEditMode = false;
+  final GlobalKey<FormState> userFormKey = GlobalKey<FormState>();
 
   @override
   void initState() {
@@ -386,7 +407,8 @@ class _TassyMainState extends State<TassyMain> with TickerProviderStateMixin, Ms
             leading: Icon(Icons.add_task_rounded),
             title: Text("New Task"),
             onTap: () {
-              viewRoute((context) => TassyTaskEditor(EditorMode.add, task: TassyTask("", taskId: -1)), fromDrawer: true);
+              _tabController!.index = 1;
+              viewRoute((context) => TassyTaskEditor(TassyTask("", taskId: -1, db: getAppState(context).db), mainState: this,), fromDrawer: true);
             },
           ),
           ListTile(
@@ -429,7 +451,13 @@ class _TassyMainState extends State<TassyMain> with TickerProviderStateMixin, Ms
   }
 
   List<Widget> _generateTabbedPages() {
-    _TassyAppState appState = _getAppState(context);
+    _TassyAppState appState = getAppState(context);
+    taskList = (appState.dbRetrieved ? TaskList(mainState: this)
+    : 
+      Center(
+        child: CircularProgressIndicator.adaptive(),
+      )
+    );
 
     return <Widget>[
       Container(
@@ -450,7 +478,8 @@ class _TassyMainState extends State<TassyMain> with TickerProviderStateMixin, Ms
               ElevatedButton.icon(
                 label: Text("New Task"),
                 onPressed: () {
-                  viewRoute((context) => TassyTaskEditor(EditorMode.add, task: TassyTask("", taskId: -1)));
+                  _tabController!.index = 1;
+                  viewRoute((context) => TassyTaskEditor(TassyTask("", taskId: -1, db: getAppState(context).db), mainState: this,));
                 },
               ),
               ElevatedButton.icon(
@@ -471,48 +500,94 @@ class _TassyMainState extends State<TassyMain> with TickerProviderStateMixin, Ms
       ),
       Container(
         padding: const EdgeInsets.all(25),
-        child: (appState.dbRetrieved ? TaskList() 
-        : 
-          Center(
-            child: CircularProgressIndicator.adaptive(),
-          )
-        ),
+        child: taskList,
       ),
       Container(
         padding: const EdgeInsets.all(25),
         child: (appState.dbRetrieved
-        ?
-          SingleChildScrollView(
-            child: Column(
-              spacing: 0,
-              children: <Widget>[
-                CircleAvatar(
-                  radius: 75,
+          ? 
+            (userEditMode
+            ?
+              Form(
+                key: userFormKey,
+                child: Column(
+                  spacing: 0,
+                  children: <Widget>[
+                    TextFormField(
+                      decoration: const InputDecoration(labelText: "Full Name"),
+                      initialValue: appState.user!.name,
+                      onSaved: (String? value) {
+                        appState.user!.name = value!;
+                      },
+                    ),
+                    TextFormField(
+                      decoration: const InputDecoration(labelText: "Nickname"),
+                      initialValue: appState.user!.nickname,
+                      onSaved: (String? value) {
+                        appState.user!.nickname = value!;
+                      },
+                    ),
+                    TextFormField(
+                      decoration: const InputDecoration(labelText: "Position"),
+                      initialValue: appState.user!.position,
+                      onSaved: (String? value) {
+                        appState.user!.position = value!;
+                      },
+                    ),
+                    TextFormField(
+                      decoration: const InputDecoration(labelText: "Office Unit"),
+                      initialValue: appState.user!.officeUnit,
+                      onSaved: (String? value) {
+                        appState.user!.officeUnit = value!;
+                      },
+                    ),
+                    TextFormField(
+                      minLines: 1,
+                      maxLines: 3,
+                      decoration: const InputDecoration(labelText: "Company"),
+                      initialValue: appState.user!.company,
+                      onSaved: (String? value) {
+                        appState.user!.company = value!;
+                      },
+                    ),
+                  ],
                 ),
-                Text(
-                  appState.user!.name,
-                  style: Theme.of(context).textTheme.headlineSmall,
-                  textAlign: TextAlign.center,
+              )
+            : 
+              SingleChildScrollView(
+                child: Column(
+                  spacing: 0,
+                  children: <Widget>[
+                    CircleAvatar(
+                      radius: 75,
+                    ),
+                    SizedBox(height: 10),
+                    Text(
+                      appState.user!.name,
+                      style: Theme.of(context).textTheme.headlineSmall,
+                      textAlign: TextAlign.center,
+                    ),
+                    Text(
+                      "\"${appState.user!.nickname}\"",
+                      style: Theme.of(context).textTheme.headlineMedium,
+                      textAlign: TextAlign.center,
+                    ),
+                    SizedBox(height: 10),
+                    Text(
+                      appState.user!.position,
+                      textAlign: TextAlign.center,
+                    ),
+                    Text(
+                      appState.user!.officeUnit,
+                      textAlign: TextAlign.center,
+                    ),
+                    Text(
+                      appState.user!.company,
+                      textAlign: TextAlign.center,
+                    ),
+                  ]
                 ),
-                Text(
-                  "\"${appState.user!.nickname}\"",
-                  style: Theme.of(context).textTheme.headlineMedium,
-                  textAlign: TextAlign.center,
-                ),
-                Text(
-                  appState.user!.position,
-                  textAlign: TextAlign.center,
-                ),
-                Text(
-                  appState.user!.officeUnit,
-                  textAlign: TextAlign.center,
-                ),
-                Text(
-                  appState.user!.company,
-                  textAlign: TextAlign.center,
-                ),
-              ]
-            ),
+            )
           )
         :
           Container(
@@ -530,15 +605,24 @@ class _TassyMainState extends State<TassyMain> with TickerProviderStateMixin, Ms
     return <FloatingActionButton?>[
       null,
       FloatingActionButton(
+        tooltip: "New Task",
         child: Icon(Icons.add_rounded),
         onPressed: () {
-          viewRoute((context)=>TassyTaskEditor(EditorMode.add, task: TassyTask("", taskId: -1)));
+          _tabController!.index = 1;
+          viewRoute((context)=>TassyTaskEditor(TassyTask("", taskId: -1, db: getAppState(context).db), mainState: this,));
         },
       ),
       FloatingActionButton(
-        child: Icon(Icons.edit_rounded),
+        tooltip: "Edit User",
+        child: Icon((userEditMode ? Icons.save_rounded : Icons.edit_rounded)),
         onPressed: () {
-          
+          setState(() {
+            userFormKey.currentState?.save();
+            getAppState(context).saveUser();
+            userEditMode = !userEditMode;
+            _fabs = _generateFABs();
+            _fab = _fabs[_tabController!.index];
+          });
         },
       ),
     ];
@@ -588,25 +672,26 @@ class _TassyMainState extends State<TassyMain> with TickerProviderStateMixin, Ms
   
   void removeTask(TassyTask task, {bool currentViewIsMain = true, int index = 1}) {
     setState(() {
-      _getAppState(context).tasks.removeWhere((checkTask)=>(checkTask.taskId == task.taskId));
+      getAppState(context).tasks.removeWhere((checkTask)=>(checkTask.taskId == task.taskId));
+      task.dbDelete();
       if (currentViewIsMain) _lastPage = index;
     });
   }
 }
 
-class _TassyTaskEditorState extends State<TassyTaskEditor> {
+class _TassyTaskEditorState extends State<TassyTaskEditor> with _AppStateMixin, MsgBoxMixin {
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
-  DateTime? schedule = DateTime.now();
-  String? taskName;
-  String? description;
   late TextEditingController scheduleTextController;
+  late TassyTask tempTask;
   
   @override
   initState() {
     super.initState();
 
+    tempTask = TassyTask.copy(widget.task); // create a duplicate of the task to hold temporary values
+
     scheduleTextController = TextEditingController.fromValue(
-      TextEditingValue(text: (schedule ?? "").toString()),
+      TextEditingValue(text: (tempTask.schedule == null ? "" : getAppState(context).df.format(tempTask.schedule!))),
     );
   }
  
@@ -615,7 +700,7 @@ class _TassyTaskEditorState extends State<TassyTaskEditor> {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text("${widget.mode == EditorMode.add ? "New" : "Edit"} Task"),
+        title: Text("${tempTask.taskId < 0 ? "New" : "Edit"} Task"),
         actions: <Widget>[
           IconButton(
             icon: Icon(Icons.settings_rounded),
@@ -633,8 +718,11 @@ class _TassyTaskEditorState extends State<TassyTaskEditor> {
           children: <Widget>[
             TextFormField(
               decoration: const InputDecoration(labelText: "Task Name"),
-              onChanged: (String? value) {
-                _formKey.currentState?.validate();
+              initialValue: tempTask.taskName,
+              onSaved: (String? value) {
+                if (_formKey.currentState?.validate() ?? false) {
+                  tempTask.taskName = value!;
+                }
               },
               validator: (String? value) {
                 if (value == null || value.isEmpty) {
@@ -645,29 +733,31 @@ class _TassyTaskEditorState extends State<TassyTaskEditor> {
             ),
             TextFormField(
               decoration: const InputDecoration(labelText: "Description"),
+              initialValue: tempTask.description,
+              onSaved: (String? value) {
+                tempTask.description = value!;
+              },
             ),
             TextFormField(
               decoration: const InputDecoration(labelText: "Date/Time"),
               controller: scheduleTextController,
+              onSaved: (String? value) {
+                setState(() {
+                  scheduleTextController.value = TextEditingValue(text: value!);
+                  tempTask.schedule = getAppState(context).df.tryParse(value);
+                });
+              },
+              validator: (value) => (value!.trim() != "" && getAppState(context).df.tryParse(value) == null ? "Invalid date" : null),
               onTap: () {
                 dt.DatePicker.showDateTimePicker(context,
                   showTitleActions: true,
                   currentTime: DateTime.now(),
                   minTime: DateTime(2000, 1, 1),
                   maxTime: DateTime(2100, 12, 31, 23, 59),
-                  /* pickerModel: dt.DateTimePickerModel(
-                    locale: dt.LocaleType.en,
-                  ), */
-                  onChanged: (date) {
-                    // setState(() {
-                    //   scheduleTextController.value = TextEditingValue(text: date.toString());
-                    //   description = date.toString();
-                    // });
-                  },
                   onConfirm: (date) {
                     setState(() {
-                      scheduleTextController.value = TextEditingValue(text: date.toString());
-                      description = date.toString();
+                      scheduleTextController.value = TextEditingValue(text: getAppState(context).df.format(date));
+                      tempTask.schedule = date;
                     });
                   },
                   locale: dt.LocaleType.en,
@@ -676,26 +766,27 @@ class _TassyTaskEditorState extends State<TassyTaskEditor> {
             ),
             ListTile(
               // leading: Text("Duration", style: TextStyle(inherit: true)),
+              isThreeLine: false,
+              contentPadding: EdgeInsets.zero,
+              minLeadingWidth: 0,
               title: TextFormField(
                 decoration: const InputDecoration(labelText: "Duration"),
-                onChanged: (String? value) {
+                initialValue: (tempTask.duration % 1 == tempTask.duration ? tempTask.duration.toInt() : tempTask.duration).toString(),
+                onFieldSubmitted: (String? value) {
                   _formKey.currentState?.validate();
                 },
-                validator: (String? value) {
-                  if (num.tryParse(value!) == null) {
-                    return "Numeric value required!";
-                  }
-                  return null;
-                },
+                validator: (String? value) => (num.tryParse(value!) == null ? "Numeric value required!" : null),
               ),
               trailing: DropdownButton<String>(
-                value: TimeUnit.hour.name,
+                value: tempTask.durationUnit.name,
                 items: TimeUnit.values.map((u)=>DropdownMenuItem<String>(
                   value: u.name,
                   child: Text(u.name),
                 )).toList(),
                 onChanged: (String? value) {
-
+                  setState(() {
+                    tempTask.durationUnit = TimeUnit.values.byName(value!);
+                  });
                 },
               ),
             ),
@@ -712,12 +803,48 @@ class _TassyTaskEditorState extends State<TassyTaskEditor> {
 
   void _submit() {
     final isValid = (_formKey.currentState?.validate() ?? false);
-    if (!isValid) {
-      return;
+    
+    if (isValid) {
+      _formKey.currentState?.save();
+
+      if (tempTask.taskId == -1) {
+        widget.mainState.setState(() {
+          tempTask.dbAdd();
+          getAppState(context).tasks.add(tempTask);
+          Navigator.of(context).pop();
+        });
+      }
+      else {
+        widget.taskTileState.setState(() {
+          widget.task.duplicateData(tempTask);
+          widget.task.dbUpdate();
+          Navigator.of(context).pop();
+        });
+      }
+
     }
-    _formKey.currentState?.save();
+    else {
+      _simpleMsg(context, "Saving task failed. Please edit the invalid data to continue saving this task.", title: getAppState(context).widget.title);
+    }
+    return;
   }
 
+  @override
+  void dispose() {
+    scheduleTextController.dispose();
+    super.dispose();
+  }
+}
+
+class _TaskListState extends State<TaskList> {
+  @override
+  Widget build(BuildContext context) {
+    return ListView.separated(
+      itemBuilder: (BuildContext context, int index) => TaskTile(widget.mainState.getAppState(context).tasks[index], widget),
+      separatorBuilder: (BuildContext context, int index) => const Divider(),
+      itemCount: widget.mainState.getAppState(context).tasks.length,
+    );
+  }
 }
 
 class _TaskTileState extends State<TaskTile> with _AppStateMixin, _MainStateMixin, MsgBoxMixin {
@@ -731,7 +858,7 @@ class _TaskTileState extends State<TaskTile> with _AppStateMixin, _MainStateMixi
     String taskTitle = widget.task.taskName.trim();
     String taskSubtitle = (widget.task.description.trim() == "" ? "" : widget.task.description.trim());
 
-    taskSubtitle += (taskSubtitle == "" ? "" : "\n") + (widget.task.schedule == null ? "" : "Schedule: ${DateFormat("MM/dd/yyyy${(widget.task.schedule!.hour == 0 && widget.task.schedule!.minute == 0 && widget.task.schedule!.second == 0 ? "" : " hh:mm aaa")}").format(widget.task.schedule!)}");
+    taskSubtitle += (taskSubtitle == "" ? "" : "\n") + (widget.task.schedule == null ? "" : "\u{1f4c5}: ${DateFormat("MM/dd/yyyy${(widget.task.schedule!.hour == 0 && widget.task.schedule!.minute == 0 && widget.task.schedule!.second == 0 ? "" : " hh:mm aaa")}").format(widget.task.schedule!)}");
 
     return ListTile(
       leading: Visibility(
@@ -760,20 +887,23 @@ class _TaskTileState extends State<TaskTile> with _AppStateMixin, _MainStateMixi
         () {
           setState(() {
             widget.task.done = isDone;
+            widget.task.dbUpdate();
             Navigator.pop(context);
           });
         },
         () {
           setState(() {
             widget.task.done = !isDone;
+            widget.task.dbUpdate();
             Navigator.pop(context);
           });
         },
-        title: _getAppState(context).widget.title
+        title: getAppState(context).widget.title
       );
     }
     else {
       widget.task.done = false;
+      widget.task.dbUpdate();
     }
   }
 
@@ -793,7 +923,7 @@ class _TaskTileState extends State<TaskTile> with _AppStateMixin, _MainStateMixi
       IconButton(
         tooltip: "Edit",
         onPressed: () {
-          _getMainState(context).viewRoute((context) => TassyTaskEditor(EditorMode.edit, task: widget.task));
+          getMainState(context).viewRoute((context) => TassyTaskEditor(widget.task, taskTileState: this));
         },
         icon: Icon(Icons.edit_rounded),
       ),
@@ -803,9 +933,12 @@ class _TaskTileState extends State<TaskTile> with _AppStateMixin, _MainStateMixi
           _dialogYesNo(
             context,
             "Delete this task?",
-            () { _getMainState(context).removeTask(widget.task); Navigator.of(context).pop(); },
+            () {
+              getMainState(context).removeTask(widget.task);
+              Navigator.of(context).pop();
+            },
             () { Navigator.of(context).pop(); },
-            title: _getAppState(context).widget.title,
+            title: getAppState(context).widget.title,
           );
         },
         icon: Icon(Icons.delete_rounded),
@@ -861,13 +994,13 @@ mixin MsgBoxMixin {
 }
 
 mixin _AppStateMixin {
-  _TassyAppState _getAppState(BuildContext context) {
+  _TassyAppState getAppState(BuildContext context) {
     return context.findAncestorStateOfType<_TassyAppState>() as _TassyAppState;
   }
 }
 
 mixin _MainStateMixin {
-  _TassyMainState _getMainState(BuildContext context) {
+  _TassyMainState getMainState(BuildContext context) {
     return context.findAncestorStateOfType<_TassyMainState>() as _TassyMainState;
   }
 }
@@ -883,7 +1016,7 @@ enum TimeUnit {
 }
 
 class TassyTask {
-  int taskId; // negative id for new tasks
+  int taskId = -1; // negative id for new tasks
   String taskName = "";
   String description = "";
   DateTime? schedule;
@@ -891,26 +1024,86 @@ class TassyTask {
   TimeUnit durationUnit = TimeUnit.hour;
   List<TassyReminder> reminders = [];
   bool done = false;
+  DBController? db;
 
-  TassyTask(this.taskName, {this.description = "", this.schedule, this.duration = 0, this.durationUnit = TimeUnit.hour, List<TassyReminder>? reminders, this.done = false, this.taskId = -1 /*TEMP PARAM*/});
+  TassyTask(this.taskName, {this.description = "", this.schedule, this.duration = 0, this.durationUnit = TimeUnit.hour, List<TassyReminder>? reminders, this.done = false, required this.db, this.taskId = -1 /*TEMP PARAM*/,});
 
-  TassyTask.db({required this.taskId}) {
+  TassyTask.db({required this.taskId, required this.db}) {
     // retrieve from database
+  }
+
+  /// Deep copy
+  TassyTask.copy(TassyTask toCopy) {
+    duplicateData(toCopy);
+  }
+
+  void duplicateData(TassyTask toCopy) {
+    taskId = toCopy.taskId;
+    taskName = toCopy.taskName;
+    description = toCopy.description;
+    schedule = toCopy.schedule;
+    duration = toCopy.duration;
+    durationUnit = toCopy.durationUnit;
+    reminders = toCopy.reminders.map((reminder)=>TassyReminder.copy(reminder)).toList();
+    done = toCopy.done;
+    db = toCopy.db;
+  }
+
+  @override
+  String toString() {
+    return "${super.toString()}\n  taskId: $taskId\n  taskName: $taskName\n  description: $description\n  schedule: $schedule\n  duration: $duration\n  durationUnit: $durationUnit\n  reminders: ${reminders.map((reminder)=>"\n$reminder")}\n  taskId: $taskId\n";
+  }
+
+  void dbAdd() {
+    if (taskId == -1) { // new tasks only
+      taskId = db!.insert("task", "taskName, description, schedule, duration, durationUnit, done", [[taskName, description, schedule.toString(), duration, durationUnit.index, done]]);
+      for (TassyReminder reminder in reminders) {
+        reminder.taskId = taskId;
+        reminder.dbAdd();
+      }
+    }
+  }
+
+  void dbUpdate() {
+    if (taskId != -1) { // existing tasks only
+      db!.update("task", "taskName = '$taskName', description = '$description', schedule = '$schedule', duration = '$duration', durationUnit = '${durationUnit.index}', done = $done", criteriaStr: "WHERE taskId = $taskId");
+    }
+  }
+
+  void dbDelete() {
+    if (taskId != -1) {
+      db!.delete("task", criteriaStr: "WHERE taskId = $taskId");
+    }
   }
 }
 
 class TassyReminder {
-  int reminderId; // negative id for new reminders
+  int reminderId = -1; // negative id for new reminders
   DateTime? alarm;
   double _snoozeDuration = 0; // zero means disabled snooze
   TimeUnit _snoozeUnit = TimeUnit.minute;
+  int taskId = -1; // negative id for new reminders
+  DBController? db;
 
-  TassyReminder(this.alarm, {double snoozeDuration = 0, TimeUnit snoozeUnit = TimeUnit.minute, this.reminderId = -1 /*TEMP PARAM*/}) {
-    setSnooze(snoozeDuration, unit: snoozeUnit); 
+  TassyReminder(this.alarm, {double snoozeDuration = 0, TimeUnit snoozeUnit = TimeUnit.minute, required this.db, this.reminderId = -1, this.taskId = -1 /*TEMP PARAM*/}) {
+    setSnooze(snoozeDuration, unit: snoozeUnit);
   }
 
-  TassyReminder.db({required this.reminderId}) {
+  TassyReminder.db({required this.reminderId, required this.db}) {
     // retrieve from database
+  }
+
+  /// Deep copy
+  TassyReminder.copy(TassyReminder toCopy) {
+    duplicateData(toCopy);
+  }
+
+  void duplicateData(TassyReminder toCopy) {
+    reminderId = toCopy.reminderId;
+    alarm = toCopy.alarm;
+    _snoozeDuration = toCopy.snoozeDuration;
+    _snoozeUnit = toCopy.snoozeUnit;
+    db = toCopy.db;
   }
 
   void setSnooze(double duration, {TimeUnit unit = TimeUnit.minute}) {
@@ -940,6 +1133,29 @@ class TassyReminder {
 
   String get snoozeUnitString {
     return snoozeUnit.name.toString() + (snoozeDuration == 1 ? "" : "s");
+  }
+
+  @override
+  String toString() {
+    return "${super.toString()}\n  reminderId: $reminderId\n  alarm: $alarm\n  snoozeDuration: $snoozeDuration\n  snoozeUnit: $snoozeUnit";
+  }
+
+  void dbAdd() {
+    if (reminderId == -1) { // new tasks only
+      reminderId = db!.insert("reminder", "alarm, snoozeDuration, snoozeUnit, taskId", [[alarm.toString(), snoozeDuration, snoozeUnit.index, taskId]]);
+    }
+  }
+
+  void dbUpdate() {
+    if (reminderId != -1) { // existing tasks only
+      db!.update("reminder", "alarm = '$alarm', snoozeDuration = '$snoozeDuration', snoozeUnit = '$snoozeUnit', taskId = '$taskId'", criteriaStr: "WHERE reminderId = $reminderId");
+    }
+  }
+
+  void dbDelete() {
+    if (reminderId != -1) { // existing tasks only
+      db!.delete("reminder", criteriaStr: "WHERE reminderId = $reminderId");
+    }
   }
 }
 
@@ -982,6 +1198,14 @@ class TassyUser {
     if (emailAddress != "" && !_emailAddresses.contains(emailAddress)) {
       _emailAddresses.add(emailAddress);
     }
+  }
+
+  List<String> get phoneNumbers {
+    return _phoneNumbers;
+  }
+
+  List<String> get emailAddresses {
+    return _emailAddresses;
   }
 }
 // #endregion
@@ -1098,6 +1322,7 @@ class DBController {
   /// RETURNS: lastInsertRowId or -1
   int insert(String table, String fieldStr, List<List<Object?>> valueSetArr) {
     final sql.PreparedStatement stmt;
+    int lastInsertRowId = -1;
 
     try {
       open();
@@ -1109,6 +1334,7 @@ class DBController {
       }
 
       stmt.dispose();
+      lastInsertRowId = (_db!.updatedRows == 0 ? -1 : _db!.lastInsertRowId);
     }
     catch (ex) {
       debugPrint("$ex");
@@ -1117,7 +1343,7 @@ class DBController {
       close();
     }
 
-    return (_db!.updatedRows == 0 ? -1 : _db!.lastInsertRowId);
+    return lastInsertRowId;
   }
 
   /// DBController.update
@@ -1127,10 +1353,14 @@ class DBController {
   ///
   /// RETURNS: number of rows updated
   int update(String table, String fieldValueStr, {String criteriaStr = ""}) {
+    int updatedRows = 0;
+
     try {
       open();
 
       _db!.execute("UPDATE $table SET $fieldValueStr ${criteriaStr == "" ? ";" : " $criteriaStr;"}");
+
+      updatedRows = _db!.updatedRows;
     }
     catch (ex) {
       debugPrint("$ex");
@@ -1139,7 +1369,7 @@ class DBController {
       close();
     }
 
-    return _db!.updatedRows;
+    return updatedRows;
   }
 
   /// DBController.delete
@@ -1148,10 +1378,14 @@ class DBController {
   /// 
   /// RETURNS: number of rows updated
   int delete(String table, {String criteriaStr = ""}) {
+    int updatedRows = 0;
+
     try {
       open();
 
       _db!.execute("DELETE FROM $table ${criteriaStr == "" ? ";" : " $criteriaStr;"}");
+
+      updatedRows = _db!.updatedRows;
     }
     catch (ex) {
       debugPrint("$ex");
@@ -1160,7 +1394,7 @@ class DBController {
       close();
     }
 
-    return _db!.updatedRows;
+    return updatedRows;
   }
 
   void close() { // ALWAYS USE THIS TO CLOSE CONNECTION
