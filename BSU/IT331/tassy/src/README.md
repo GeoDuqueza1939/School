@@ -1,16 +1,5 @@
 # TASSY: The Task Assistant System
 
-A new Flutter project.
+This hybrid application allows the user to save and monitor tasks along with details and schedules.
 
-## Getting Started
-
-This project is a starting point for a Flutter application.
-
-A few resources to get you started if this is your first Flutter project:
-
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
-
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+For inquires, please send an email through this link: [24-00901@g.batstate-u.edu.ph](mailto:24-00901@g.batstate-u.edu.ph).
