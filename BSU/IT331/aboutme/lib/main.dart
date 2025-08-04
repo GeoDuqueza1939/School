@@ -12,10 +12,21 @@ import 'package:device_info_plus/device_info_plus.dart';
 import 'dart:io';
 
 void main() {
-  Map<String, Object> user = {
+  runApp(AboutMe_Duqueza());
+}
+
+class AboutMe_Duqueza extends StatefulWidget {
+  const AboutMe_Duqueza({super.key});
+  
+  @override
+  State<StatefulWidget> createState() => _AboutMeState();
+}
+
+class _AboutMeState extends State<AboutMe_Duqueza> {
+  final Map<String, Object> user = {
     'fullName': 'Geovani P. Duqueza',
     'initials': 'GD',
-    'bio': 'An IT enthusiast with a background in several fields.',
+    'bio': 'An IT enthusiast with a background in other fields.',
     'classSection': 'BSIT-ETEEAP/IT 3301',
     'course': 'Bachelor of Science in Information Technology (ETEEAP)',
     'age': 41,
@@ -23,25 +34,6 @@ void main() {
     'email': '24-00901@g.batstate-u.edu.ph',
     'profilePic': 'assets/images/profile-photo000.jpg',
   };
-
-  runApp(AboutMe_Duqueza(user));
-}
-
-// ignore: camel_case_types, must_be_immutable
-class AboutMe_Duqueza extends StatefulWidget {
-  Map<String, Object> user = {};
-
-  AboutMe_Duqueza(this.user, {super.key});
-  
-  @override
-  State<StatefulWidget> createState() {
-    // ignore: no_logic_in_create_state
-    return _AboutMeState(user);
-  }
-}
-
-class _AboutMeState extends State<AboutMe_Duqueza> {
-  Map<String, Object> user = {};
   bool fabVisible = false;
   bool profileDetailsVisible = false;
   List<Widget> visibleButtonLabel = <Widget>[
@@ -68,7 +60,9 @@ class _AboutMeState extends State<AboutMe_Duqueza> {
     fontFamily: 'Lora',
   );
   
-  _AboutMeState(this.user) {
+  @override
+  initState() {
+    super.initState();
     _setDefaultPages();
   }
 
