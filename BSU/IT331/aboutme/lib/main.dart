@@ -12,7 +12,7 @@ import 'package:device_info_plus/device_info_plus.dart';
 import 'dart:io';
 
 void main() {
-  runApp(AboutMe_Duqueza());
+  runApp(MaterialApp(home: AboutMe_Duqueza()));
 }
 
 class AboutMe_Duqueza extends StatefulWidget {
@@ -22,7 +22,7 @@ class AboutMe_Duqueza extends StatefulWidget {
   State<StatefulWidget> createState() => _AboutMeState();
 }
 
-class _AboutMeState extends State<AboutMe_Duqueza> {
+class _AboutMeState extends State<AboutMe_Duqueza> with RouteMixin {
   final Map<String, Object> user = {
     'fullName': 'Geovani P. Duqueza',
     'initials': 'GD',
@@ -117,6 +117,21 @@ class _AboutMeState extends State<AboutMe_Duqueza> {
                       Navigator.pop(context);
                       _currentPageIndex = 1;
                       fabVisible = true;
+                    });
+                  },
+                ),
+                ListTile(
+                  title: const Text('My Hobbies'),
+                  leading: const Icon(
+                    Icons.toys_rounded,
+                    // color: Colors.black,
+                  ),
+                  onTap: () {
+                    setState(() {
+                      // Navigator.pop(context);
+                      // _currentPageIndex = 1;
+                      // fabVisible = true;
+                      viewRoute((context)=>HobbiesMoreInfo(), context, fromDrawer: true);
                     });
                   },
                 ),
@@ -316,13 +331,14 @@ class _AboutMeState extends State<AboutMe_Duqueza> {
                       null, ['Course', 'course'],
                       null, ['Class/Section', 'classSection'],
                       null, ['Hobbies', 'hobbies'],
+                      null, ['', 'hobbies'],
                     ].map(
                       (i)=>(i == null ? TableRow(children: List<SizedBox>.generate(3, (i)=>SizedBox(height: 10,)),) 
                         : TableRow(
                           children: [
                             Text(i[0], style: TextStyle(fontWeight: FontWeight.bold),),
                             SizedBox(width: 10),
-                            Text(_getInfo(i[1])),
+                            (i[0] == "" ? TextButton(onPressed: () {viewRoute((context)=>HobbiesMoreInfo(), context);}, child: Text("View Detailed Hobbies")) : Text(_getInfo(i[1]))),
                           ],
                         )
                       )
@@ -347,5 +363,52 @@ class _AboutMeState extends State<AboutMe_Duqueza> {
       _generateProfilePage(),
       _generateContactInfoPage(),
     ];
+  }
+}
+
+class HobbiesMoreInfo extends StatelessWidget with RouteMixin {
+  const HobbiesMoreInfo({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Builder(
+      builder: (BuildContext context) {
+        return Scaffold(
+          appBar: AppBar(
+            title: Text("Hobbies"),
+            automaticallyImplyLeading: false,
+            leading: IconButton (
+              icon: Icon(Icons.arrow_back),
+              onPressed: () {
+                viewRoute((context)=>AboutMe_Duqueza(), context);
+              },
+            ),
+          ),
+          body: ListView(
+            children: <Widget>[
+              ListTile(
+                leading: Text("Favorite Books"),
+                title: Text("Harry Potter, Lord of the Rings, any Stephen King novel"),
+              ),
+              ListTile(
+                leading: Text("Favorite Anime"),
+                title: Text("Pokemon, Arifureta, Re:ZERO, any animé of the isekai genre"),
+              ),
+              ListTile(
+                leading: Text("Favorite Video Games"),
+                title: Text("Starcraft/Starcraft II, Dungeon and Dragons Online, Warcraft (any installment)"),
+              ),
+            ],
+          ),
+        );
+      },
+    );
+  }
+}
+
+mixin RouteMixin {
+  void viewRoute(WidgetBuilder f, BuildContext context, {bool fromDrawer = false}) {
+    if (fromDrawer) Navigator.pop(context);
+    Navigator.push(context, MaterialPageRoute(builder: f));
   }
 }
