@@ -15,6 +15,7 @@ void main() {
   runApp(MaterialApp(home: AboutMe_Duqueza()));
 }
 
+// ignore: camel_case_types
 class AboutMe_Duqueza extends StatefulWidget {
   const AboutMe_Duqueza({super.key});
   
@@ -399,6 +400,72 @@ class HobbiesMoreInfo extends StatelessWidget with RouteMixin {
                 title: Text("Starcraft/Starcraft II, Dungeon and Dragons Online, Warcraft (any installment)"),
               ),
             ],
+          ),
+        );
+      },
+    );
+  }
+}
+
+class ContactMe extends StatelessWidget with RouteMixin {
+  const ContactMe({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Builder(
+      builder: (BuildContext context) {
+        return Scaffold(
+          appBar: AppBar(
+            title: Text("Contact Me"),
+            automaticallyImplyLeading: false,
+            leading: IconButton (
+              icon: Icon(Icons.arrow_back),
+              onPressed: () {
+                viewRoute((context)=>AboutMe_Duqueza(), context);
+              },
+            ),
+          ),
+          body: Form(
+            autovalidateMode: AutovalidateMode.always,
+            child: ListView(
+              children: <Widget>[
+                ListTile(
+                  leading: Text("Email Address"),
+                  title: Text("24-00901@g.batstate-u.edu.ph"),
+                ),
+                ListTile(
+                  leading: Text("Phone Number"),
+                  title: Text("09153032914"),
+                ),
+                Text("Send Email"),
+                TextFormField(
+                  decoration: const InputDecoration(labelText: "From"),
+                  initialValue: "",
+                  onSaved: (String? value) {
+                    
+                  },
+                  validator: (String? value) {
+                    final regex = RegExp(r"(?:[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'"
+                        r'*+/=?^_`{|}~-]+)*|"(?:[\x01-\x08\x0b\x0c\x0e-\x1f\x21\x23-\x5b\x5d-'
+                        r'\x7f]|\\[\x01-\x09\x0b\x0c\x0e-\x7f])*")@(?:(?:[a-z0-9](?:[a-z0-9-]*'
+                        r'[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?|\[(?:(?:(2(5[0-5]|[0-4]'
+                        r'[0-9])|1[0-9][0-9]|[1-9]?[0-9]))\.){3}(?:(2(5[0-5]|[0-4][0-9])|1[0-9]'
+                        r'[0-9]|[1-9]?[0-9])|[a-z0-9-]*[a-z0-9]:(?:[\x01-\x08\x0b\x0c\x0e-\x1f\'
+                        r'x21-\x5a\x53-\x7f]|\\[\x01-\x09\x0b\x0c\x0e-\x7f])+)\])');
+
+                    return value!.isNotEmpty && !regex.hasMatch(value) ? 'Invalid email address' : null;
+                  },
+                ),
+                TextFormField(
+                  decoration: const InputDecoration(labelText: "Subject"),
+                  initialValue: "",
+                ),
+                TextFormField(
+                  decoration: const InputDecoration(labelText: "Body"),
+                  initialValue: "",
+                ),
+              ],
+            ),
           ),
         );
       },
