@@ -64,168 +64,184 @@ class _AboutMeState extends State<AboutMe_Duqueza> with RouteMixin {
   @override
   initState() {
     super.initState();
-    _setDefaultPages();
   }
 
   @override
   Widget build(BuildContext context) {
+    ContactMe contactMe = ContactMe();
+
     return MaterialApp(
       title: '${user['fullName']} (Profile Page)',
-      home: Builder(
-        builder: (context)=>Scaffold(
-          appBar: AppBar(
-            title: Text('${_getInfo('fullName')} (Profile Page)'),
-            backgroundColor: Theme.of(context).colorScheme.primary,
-          ),
-          drawer: Drawer(
-            child: ListView(
-              padding: EdgeInsets.zero,
-              children: <Widget>[
-                DrawerHeader(
-                  child: UserAccountsDrawerHeader(
-                    accountName: Text(_getInfo('fullName')),
-                    accountEmail: Text(_getInfo('email')),
-                    currentAccountPictureSize: Size.square(50),
-                    currentAccountPicture: CircleAvatar(
-                      // backgroundColor: Colors.grey,
-                      foregroundImage: AssetImage(_getInfo('profilePic')),
-                      child: Text(_getInfo('initials')),
+      routes: {
+        "home": (context) {
+            _setDefaultPages();
+            return Scaffold(
+              appBar: AppBar(
+                title: Text('${_getInfo('fullName')} (Profile Page)'),
+                backgroundColor: Theme.of(context).colorScheme.primary,
+              ),
+              drawer: Drawer(
+                child: ListView(
+                  padding: EdgeInsets.zero,
+                  children: <Widget>[
+                    DrawerHeader(
+                      child: UserAccountsDrawerHeader(
+                        accountName: Text(_getInfo('fullName')),
+                        accountEmail: Text(_getInfo('email')),
+                        currentAccountPictureSize: Size.square(50),
+                        currentAccountPicture: CircleAvatar(
+                          // backgroundColor: Colors.grey,
+                          foregroundImage: AssetImage(_getInfo('profilePic')),
+                          child: Text(_getInfo('initials')),
+                        ),
+                      ),
                     ),
-                  ),
-                ),
-                ListTile(
-                  title: const Text('Home'),
-                  leading: const Icon(
-                    Icons.home,
-                    // color: Colors.black,
-                  ),
-                  onTap: () {
-                    setState(() {
-                      Navigator.pop(context);
-                      _currentPageIndex = 0;
-                      fabVisible = false;
-                    });
-                  },
-                ),
-                ListTile(
-                  title: const Text('My Profile'),
-                  leading: const Icon(
-                    Icons.account_circle,
-                    // color: Colors.black,
-                  ),
-                  onTap: () {
-                    setState(() {
-                      Navigator.pop(context);
-                      _currentPageIndex = 1;
-                      fabVisible = true;
-                    });
-                  },
-                ),
-                ListTile(
-                  title: const Text('My Hobbies'),
-                  leading: const Icon(
-                    Icons.toys_rounded,
-                    // color: Colors.black,
-                  ),
-                  onTap: () {
-                    setState(() {
-                      // Navigator.pop(context);
-                      // _currentPageIndex = 1;
-                      // fabVisible = true;
-                      viewRoute((context)=>HobbiesMoreInfo(), context, fromDrawer: true);
-                    });
-                  },
-                ),
-                ListTile(
-                  title: const Text('My Contact Information'),
-                  leading: const Icon(
-                    Icons.contact_page,
-                    // color: Colors.black,
-                  ),
-                  onTap: () {
-                    setState(() {
-                      Navigator.pop(context);
-                      _currentPageIndex = 2;
-                      fabVisible = false;
-                    });
-                  },
-
-                ),
-                ListTile(
-                  title: const Text('Toggle Dark Mode'),
-                  leading: Icon(
-                    darkModeIcon,
-                    // color: Colors.black,
-                  ),
-                  onTap: () {
-                    setState(() {
-                      Navigator.pop(context);
-                      if (darkModeIcon == Icons.dark_mode) {
-                        darkModeIcon = Icons.sunny;
-                        themeMode = ThemeMode.dark;
-                      }
-                      else {
-                        darkModeIcon = Icons.dark_mode;
-                        themeMode = ThemeMode.light;
-                      }
-                    });
-                  },
-                ),
-                ListTile(
-                  title: const Text('Exit'),
-                  leading: const Icon(
-                    Icons.exit_to_app,
-                    // color: Colors.black,
-                  ),
-                  enabled: true,
-                  onTap: () async {
-                    final dev = DeviceInfoPlugin();
-                    final devInfo = await dev.deviceInfo;
-                    final allInfo = devInfo.data;
-
-                    setState(() {
-                      String devType = (allInfo.containsKey('servicePackMajor') ? 'Windows'
-                        : (allInfo.containsKey('prettyName') ? 'Linux'
-                        : (allInfo.containsKey('osRelease') ? 'MacOS'
-                        : (allInfo.containsKey('utsname') ? 'IOS'
-                        : (allInfo.containsKey('systemFeatures') ? 'Android'
-                        : (allInfo.containsKey('browserName') ? 'Web'
-                        : 'unknown'))))));
-                          
-                      switch (devType) {
-                        case 'Windows': case 'Linux': case 'MacOS':
-                          exit(0);
-                          // ignore: dead_code
-                          break;
-                        case 'IOS': case 'Android':
-                          SystemNavigator.pop();
-                          break;
-                        case 'Web': case 'unknown':
+                    ListTile(
+                      title: const Text('Home'),
+                      leading: const Icon(
+                        Icons.home,
+                        // color: Colors.black,
+                      ),
+                      onTap: () {
+                        setState(() {
                           Navigator.pop(context);
-                          _simpleMsg('To close this app, please close the browser tab or window manually.', title: 'About Me');
-                          break;
-                      }
-                    });
-                  },
+                          _currentPageIndex = 0;
+                          fabVisible = false;
+                        });
+                      },
+                    ),
+                    ListTile(
+                      title: const Text('My Profile'),
+                      leading: const Icon(
+                        Icons.account_circle,
+                        // color: Colors.black,
+                      ),
+                      onTap: () {
+                        setState(() {
+                          Navigator.pop(context);
+                          _currentPageIndex = 1;
+                          fabVisible = true;
+                        });
+                      },
+                    ),
+                    ListTile(
+                      title: const Text('My Hobbies'),
+                      leading: const Icon(
+                        Icons.toys_rounded,
+                      ),
+                      onTap: () {
+                        setState(() {
+                          viewRoute((context)=>HobbiesMoreInfo(), context, fromDrawer: true);
+                        });
+                      },
+                    ),
+                    ListTile(
+                      title: const Text('My Skills'),
+                      leading: const Icon(
+                        Icons.contact_page,
+                      ),
+                      onTap: () {
+                        setState(() {
+                          viewRoute((context)=>SkillsInfo(), context, fromDrawer: true);
+                        });
+                      },
+
+                    ),
+                    ListTile(
+                      title: const Text('Contact Information'),
+                      leading: const Icon(
+                        Icons.contact_page,
+                      ),
+                      onTap: () {
+                        setState(() {
+                          // viewRoute((context)=>ContactMe(), context, fromDrawer: true);
+                          Navigator.pop(context);
+                          Navigator.pushNamed(context, "contact");
+                        });
+                      },
+
+                    ),
+                    ListTile(
+                      title: const Text('Toggle Dark Mode'),
+                      leading: Icon(
+                        darkModeIcon,
+                        // color: Colors.black,
+                      ),
+                      onTap: () {
+                        setState(() {
+                          Navigator.pop(context);
+                          if (darkModeIcon == Icons.dark_mode) {
+                            darkModeIcon = Icons.sunny;
+                            themeMode = ThemeMode.dark;
+                          }
+                          else {
+                            darkModeIcon = Icons.dark_mode;
+                            themeMode = ThemeMode.light;
+                          }
+                        });
+                      },
+                    ),
+                    ListTile(
+                      title: const Text('Exit'),
+                      leading: const Icon(
+                        Icons.exit_to_app,
+                        // color: Colors.black,
+                      ),
+                      enabled: true,
+                      onTap: () async {
+                        final dev = DeviceInfoPlugin();
+                        final devInfo = await dev.deviceInfo;
+                        final allInfo = devInfo.data;
+
+                        setState(() {
+                          String devType = (allInfo.containsKey('servicePackMajor') ? 'Windows'
+                            : (allInfo.containsKey('prettyName') ? 'Linux'
+                            : (allInfo.containsKey('osRelease') ? 'MacOS'
+                            : (allInfo.containsKey('utsname') ? 'IOS'
+                            : (allInfo.containsKey('systemFeatures') ? 'Android'
+                            : (allInfo.containsKey('browserName') ? 'Web'
+                            : 'unknown'))))));
+                              
+                          switch (devType) {
+                            case 'Windows': case 'Linux': case 'MacOS':
+                              exit(0);
+                              // ignore: dead_code
+                              break;
+                            case 'IOS': case 'Android':
+                              SystemNavigator.pop();
+                              break;
+                            case 'Web': case 'unknown':
+                              Navigator.pop(context);
+                              _simpleMsg('To close this app, please close the browser tab or window manually.', title: 'About Me');
+                              break;
+                          }
+                        });
+                      },
+                    ),
+                  ],
                 ),
-              ],
-            ),
-          ),
-          floatingActionButton: Visibility(
-            visible: fabVisible,
-            child: FloatingActionButton(
-              tooltip: 'Toggle view details',
-              onPressed: _showDetails,
-              child: Icon(Icons.remove_red_eye_outlined),
-            ),
-          ),
-          body: Container(
-            // scrollDirection: Axis.vertical,
-            padding: EdgeInsets.all(15),
-            child: _pages[_currentPageIndex],
-          ),
-        ),
-      ),
+              ),
+              floatingActionButton: Visibility(
+                visible: fabVisible,
+                child: FloatingActionButton(
+                  tooltip: 'Toggle view details',
+                  onPressed: _showDetails,
+                  child: Icon(Icons.remove_red_eye_outlined),
+                ),
+              ),
+              body: Container(
+                // scrollDirection: Axis.vertical,
+                padding: EdgeInsets.all(15),
+                child: _pages[_currentPageIndex],
+              ),
+            );
+          },
+        // "hobbies": (context) {},
+        // "skills": (context) {},
+        "contact": contactMe.builder,
+      },
+      initialRoute: "home",
+      // home: 
       theme: lightTheme,
       darkTheme: darkTheme,
       themeMode: themeMode,
@@ -275,7 +291,7 @@ class _AboutMeState extends State<AboutMe_Duqueza> with RouteMixin {
   }
   
   Widget _generateHomePage() {
-    return Center(child: Text('Home'));
+    return Center(child: Text('Welcome to My Profile!', style: Theme.of(context).textTheme.headlineMedium));
   }
   
   Widget _generateProfilePage() {
@@ -291,12 +307,33 @@ class _AboutMeState extends State<AboutMe_Duqueza> with RouteMixin {
               Row(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  CircleAvatar(
-                    minRadius: 25,
-                    maxRadius: 75,
-                    // backgroundColor: Colors.grey,
-                    foregroundImage: AssetImage(_getInfo('profilePic')),
-                    child: Text('GD'),
+                  GestureDetector(
+                    onTap: () {
+                      showDialog(
+                        context: context,
+                        builder:(context)=>SimpleDialog(
+                          title: Text("About Me"),
+                          contentPadding: EdgeInsets.all(25),
+                          children: [
+                            Text("Please don't obsess on my gorgeous photo too much."),
+                            SizedBox(height: 25),
+                            TextButton(
+                              onPressed: () {
+                                Navigator.pop(context);
+                              },
+                              child: Text("OK"),
+                            ),
+                          ],
+                        )
+                      );
+                    },
+                    child: CircleAvatar(
+                      minRadius: 25,
+                      maxRadius: 75,
+                      // backgroundColor: Colors.grey,
+                      foregroundImage: AssetImage(_getInfo('profilePic')),
+                      child: Text('GD'),
+                    ),
                   ),
                   SizedBox(width: 25),
                   Flexible(
@@ -339,7 +376,31 @@ class _AboutMeState extends State<AboutMe_Duqueza> with RouteMixin {
                           children: [
                             Text(i[0], style: TextStyle(fontWeight: FontWeight.bold),),
                             SizedBox(width: 10),
-                            (i[0] == "" ? TextButton(onPressed: () {viewRoute((context)=>HobbiesMoreInfo(), context);}, child: Text("View Detailed Hobbies")) : Text(_getInfo(i[1]))),
+                            (i[0] == "" ? TextButton(onPressed: () {viewRoute((context)=>HobbiesMoreInfo(), context);}, child: Text("View Detailed Hobbies"))
+                              : GestureDetector(
+                                onLongPress: () {
+                                  showDialog(
+                                    context: context,
+                                    builder:(context) {
+                                      return AlertDialog(
+                                        title: Text("About Me"),
+                                        contentPadding: EdgeInsets.all(25),
+                                        content: Text("You have long pressed on my hobbies. Please click the button [View Detailed Hobbies] for more details."),
+                                        actions: [
+                                          TextButton(
+                                            onPressed: () {
+                                              Navigator.pop(context);
+                                            },
+                                            child: Text("OK"),
+                                          ),
+                                        ],
+                                      );
+                                    },
+                                  );
+                                },
+                                child: Text(_getInfo(i[1])),
+                              )
+                            ),
                           ],
                         )
                       )
@@ -381,7 +442,8 @@ class HobbiesMoreInfo extends StatelessWidget with RouteMixin {
             leading: IconButton (
               icon: Icon(Icons.arrow_back),
               onPressed: () {
-                viewRoute((context)=>AboutMe_Duqueza(), context);
+                // viewRoute((context)=>AboutMe_Duqueza(), context);
+                Navigator.pop(context);
               },
             ),
           ),
@@ -407,8 +469,8 @@ class HobbiesMoreInfo extends StatelessWidget with RouteMixin {
   }
 }
 
-class ContactMe extends StatelessWidget with RouteMixin {
-  const ContactMe({super.key});
+class SkillsInfo extends StatelessWidget with RouteMixin {
+  const SkillsInfo({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -416,59 +478,130 @@ class ContactMe extends StatelessWidget with RouteMixin {
       builder: (BuildContext context) {
         return Scaffold(
           appBar: AppBar(
-            title: Text("Contact Me"),
+            title: Text("Skills"),
             automaticallyImplyLeading: false,
             leading: IconButton (
               icon: Icon(Icons.arrow_back),
               onPressed: () {
-                viewRoute((context)=>AboutMe_Duqueza(), context);
+                // viewRoute((context)=>AboutMe_Duqueza(), context);
+                Navigator.pop(context);
               },
             ),
           ),
-          body: Form(
-            autovalidateMode: AutovalidateMode.always,
-            child: ListView(
-              children: <Widget>[
-                ListTile(
-                  leading: Text("Email Address"),
-                  title: Text("24-00901@g.batstate-u.edu.ph"),
-                ),
-                ListTile(
-                  leading: Text("Phone Number"),
-                  title: Text("09153032914"),
-                ),
-                Text("Send Email"),
-                TextFormField(
-                  decoration: const InputDecoration(labelText: "From"),
-                  initialValue: "",
-                  onSaved: (String? value) {
-                    
-                  },
-                  validator: (String? value) {
-                    final regex = RegExp(r"(?:[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'"
-                        r'*+/=?^_`{|}~-]+)*|"(?:[\x01-\x08\x0b\x0c\x0e-\x1f\x21\x23-\x5b\x5d-'
-                        r'\x7f]|\\[\x01-\x09\x0b\x0c\x0e-\x7f])*")@(?:(?:[a-z0-9](?:[a-z0-9-]*'
-                        r'[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?|\[(?:(?:(2(5[0-5]|[0-4]'
-                        r'[0-9])|1[0-9][0-9]|[1-9]?[0-9]))\.){3}(?:(2(5[0-5]|[0-4][0-9])|1[0-9]'
-                        r'[0-9]|[1-9]?[0-9])|[a-z0-9-]*[a-z0-9]:(?:[\x01-\x08\x0b\x0c\x0e-\x1f\'
-                        r'x21-\x5a\x53-\x7f]|\\[\x01-\x09\x0b\x0c\x0e-\x7f])+)\])');
-
-                    return value!.isNotEmpty && !regex.hasMatch(value) ? 'Invalid email address' : null;
-                  },
-                ),
-                TextFormField(
-                  decoration: const InputDecoration(labelText: "Subject"),
-                  initialValue: "",
-                ),
-                TextFormField(
-                  decoration: const InputDecoration(labelText: "Body"),
-                  initialValue: "",
-                ),
-              ],
-            ),
+          body: ListView(
+            children: <Widget>[
+              ListTile(
+                leading: Text("IT Skills"),
+                title: Text("Programming; IT Management; Computer Systems Servicing"),
+              ),
+              ListTile(
+                leading: Text("Programming Languages"),
+                title: Text("VB6; VB.Net; VBScript; JavaScript; C++; C#; PHP; Python; Dart;"),
+              ),
+              ListTile(
+                leading: Text("Other Skills"),
+                title: Text("Clerical; Cookery"),
+              ),
+            ],
           ),
         );
       },
+    );
+  }
+}
+
+class ContactMe extends StatelessWidget with RouteMixin {
+  final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+
+  ContactMe({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Builder(
+      builder: builder,
+    );
+  }
+
+  Widget builder(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text("Contact Me"),
+        automaticallyImplyLeading: false,
+        leading: IconButton (
+          icon: Icon(Icons.arrow_back),
+          onPressed: () {
+            // viewRoute((context)=>AboutMe_Duqueza(), context);
+            Navigator.pop(context);
+          },
+        ),
+      ),
+      body: Form(
+        key: _formKey,
+        // autovalidateMode: AutovalidateMode.always,
+        child: ListView(
+          children: <Widget>[
+            ListTile(
+              leading: Text("Email Address"),
+              title: Text("24-00901@g.batstate-u.edu.ph"),
+            ),
+            ListTile(
+              leading: Text("Phone Number"),
+              title: Text("09153032914"),
+            ),
+            SizedBox(height: 25),
+            ListTile(
+              leading: Text("Send Feedback"),
+              title: Column(
+                children: [
+                  TextFormField(
+                    decoration: const InputDecoration(labelText: "Sender Name"),
+                    initialValue: "",
+                    validator: (String? value) {
+                      return (value!.isEmpty ? "Should not be empty" : null);
+                    },
+                  ),
+                  TextFormField(
+                    decoration: const InputDecoration(labelText: "Email"),
+                    initialValue: "",
+                    validator: (String? value) {
+                      final regex = RegExp(r"^\w[\w\.-]*@\w[\w\.-]*\.[a-zA-Z]{2,}$");
+
+                      return (!regex.hasMatch(value!) ? 'Invalid email address' : null);
+                    },
+                  ),
+                  TextFormField(
+                    decoration: const InputDecoration(labelText: "Message/Comment"),
+                    minLines: 5,
+                    maxLines: 10,
+                    validator: (String? value) {
+                      return (value!.isEmpty ? "Should not be empty" : (value.length < 10 ? "Message is too short" : null));
+                    },
+                  ),
+                ],
+              ),
+            ),
+            ElevatedButton(
+              onPressed: () {
+                if (_formKey.currentState!.validate()) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                      content: Text("Successfully submitted data!")
+                    ),
+                  );
+                }
+                else {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                      content: Text("Please check the fields for invalid inputs.")
+                    ),
+                  );
+                }
+              },
+              child: Text("Submit"),
+            ),
+          ],
+        ),
+      ),
     );
   }
 }
